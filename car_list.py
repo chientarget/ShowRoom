@@ -2,8 +2,16 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWid
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtCore import Qt
 from database import get_cars, delete_car
-from car_forms import CarEditDialog, CarInfoDialog
+from car_forms import CarEditDialog, CarInfoDialog, CarAddDialog
 
+def format_price(price):
+    if price >= 1_000_000_000:
+        formatted_price = f"{price / 1_000_000_000:.2f} Tỷ"
+    elif price >= 1_000_000:
+        formatted_price = f"{price / 1_000_000:.0f} Triệu"
+    else:
+        formatted_price = f"{price:,} vnđ"
+    return formatted_price
 
 class CarListWidget(QWidget):
     def __init__(self, parent=None):
@@ -14,15 +22,21 @@ class CarListWidget(QWidget):
         layout = QVBoxLayout(self)
 
         header = QLabel("Danh sách xe")
-        header.setFont(QFont('MulishRoman', 16, QFont.Weight.Bold))
+        header.setFont(QFont('MulishRoman', 18, QFont.Weight.Bold))  # Increased font size
         layout.addWidget(header)
 
         self.car_table = QTableWidget()
-        self.car_table.setColumnCount(10)
-        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Loại xe", "Năm sản xuất", "Màu sắc", "Bảo hành", "Giá", "Trạng thái", "Thông tin", "Sửa", "Xóa"])
+        self.car_table.setColumnCount(10)  # 7 data columns + 3 for buttons
+        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Năm sản xuất", "Màu sắc", "Bảo hành", "Giá", "Dung tích nhiên liệu", "Trạng thái", "", "", ""])
         self.car_table.horizontalHeader().setStretchLastSection(True)
         self.car_table.setAlternatingRowColors(True)
         self.car_table.setStyleSheet("QHeaderView::section { background-color: #2DB4AE; color: white; }")
+
+        # Set font size for the table and header
+        font = QFont('MulishRoman', 12)
+        self.car_table.setFont(font)
+        self.car_table.horizontalHeader().setFont(QFont('MulishRoman', 14, QFont.Weight.Bold))
+
         layout.addWidget(self.car_table)
 
         add_car_button = QPushButton("+ Thêm xe")
@@ -41,11 +55,18 @@ class CarListWidget(QWidget):
             row_position = self.car_table.rowCount()
             self.car_table.insertRow(row_position)
             self.car_table.setItem(row_position, 0, QTableWidgetItem(car[1]))
-            self.car_table.setItem(row_position, 1, QTableWidgetItem(car[2]))
-            self.car_table.setItem(row_position, 2, QTableWidgetItem(str(car[3])))
-            self.car_table.setItem(row_position, 3, QTableWidgetItem(car[4]))
-            self.car_table.setItem(row_position, 4, QTableWidgetItem(car[5]))
-            self.car_table.setItem(row_position, 5, QTableWidgetItem(car[6]))
+            self.car_table.setItem(row_position, 1, QTableWidgetItem(str(car[2])))
+            self.car_table.setItem(row_position, 2, QTableWidgetItem(car[3]))
+            self.car_table.setItem(row_position, 3, QTableWidgetItem(str(car[4])))
+
+            # Format the price
+            formatted_price = format_price(float(car[5]))
+            self.car_table.setItem(row_position, 4, QTableWidgetItem(formatted_price))
+
+            # Format the fuel capacity
+            formatted_capacity = f"{car[6]}L"
+            self.car_table.setItem(row_position, 5, QTableWidgetItem(formatted_capacity))
+
             status_item = QTableWidgetItem(car[7])
             if car[7] == "Đã bán":
                 status_item.setForeground(Qt.GlobalColor.green)
@@ -57,21 +78,21 @@ class CarListWidget(QWidget):
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
-            info_button.setIcon(QIcon("info.svg"))
+            info_button.setIcon(QIcon("img/info.svg"))
             info_button.setFixedSize(30, 30)
             info_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             info_button.clicked.connect(lambda _, car_id=car[0]: self.show_car_info(car_id))
             self.car_table.setCellWidget(row_position, 7, info_button)
 
             edit_button = QPushButton()
-            edit_button.setIcon(QIcon("edit.svg"))
+            edit_button.setIcon(QIcon("img/edit.svg"))
             edit_button.setFixedSize(30, 30)
             edit_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             edit_button.clicked.connect(lambda _, car_id=car[0]: self.edit_car(car_id))
             self.car_table.setCellWidget(row_position, 8, edit_button)
 
             delete_button = QPushButton()
-            delete_button.setIcon(QIcon("delete.svg"))
+            delete_button.setIcon(QIcon("img/delete.svg"))
             delete_button.setFixedSize(30, 30)
             delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             delete_button.clicked.connect(lambda _, car_id=car[0]: self.delete_car(car_id))
@@ -80,7 +101,7 @@ class CarListWidget(QWidget):
         self.car_table.resizeColumnsToContents()
 
         # Adjust column widths to be slightly wider than content
-        for col in range(self.car_table.columnCount() - 3):
+        for col in range(7):  # Only adjust data columns
             current_width = self.car_table.columnWidth(col)
             self.car_table.setColumnWidth(col, current_width + 20)
 
@@ -90,8 +111,9 @@ class CarListWidget(QWidget):
             self.car_table.setColumnWidth(col, 40)
 
     def add_car(self):
-        # Logic to add a car to the database (could show a dialog to input car details)
-        pass
+        dialog = CarAddDialog(self)
+        if dialog.exec():
+            self.load_cars()
 
     def delete_car(self, car_id):
         delete_car(car_id)

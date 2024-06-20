@@ -7,7 +7,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Showroom Vinfest")
-        self.setGeometry(100, 100, 1350, 800)  # Set the window size to 1350x800
+        self.setGeometry(100, 100, 1350, 800)
 
         # Main container widget
         main_widget = QWidget()
@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         sidebar_layout.addWidget(title)
 
         user_label = QLabel("Phạm nhật vượng\nID: 3456")
-        user_label.setFont(QFont('MulishRoman', 12))
+        user_label.setFont(QFont('MulishRoman', 15))
         user_label.setStyleSheet("color: #FFFFFF; background-color: #444444; padding: 10px;")
         sidebar_layout.addWidget(user_label)
 
@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
 
         main_layout.addWidget(sidebar)
         main_layout.addWidget(content)
-        main_layout.setStretch(1, 1)  # Ensure the content area takes up the remaining space
+        main_layout.setStretch(1, 1)
 
         self.setCentralWidget(main_widget)
 

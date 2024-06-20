@@ -22,7 +22,7 @@ class CarListWidget(QWidget):
         layout = QVBoxLayout(self)
 
         header = QLabel("Danh sách xe")
-        header.setFont(QFont('MulishRoman', 18, QFont.Weight.Bold))  # Increased font size
+        header.setFont(QFont('MulishRoman', 18, QFont.Weight.Bold))
         layout.addWidget(header)
 
         self.car_table = QTableWidget()
@@ -32,7 +32,7 @@ class CarListWidget(QWidget):
         self.car_table.setAlternatingRowColors(True)
         self.car_table.setStyleSheet("QHeaderView::section { background-color: #2DB4AE; color: white; }")
 
-        # Set font size for the table and header
+
         font = QFont('MulishRoman', 12)
         self.car_table.setFont(font)
         self.car_table.horizontalHeader().setFont(QFont('MulishRoman', 14, QFont.Weight.Bold))

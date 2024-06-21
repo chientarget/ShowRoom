@@ -13,50 +13,50 @@ class CarEditDialog(QDialog):
 
         car_details = get_car_details(self.car_id)
 
-        self.name_edit = QLineEdit(car_details[0])
-        self.produced_year_edit = QLineEdit(str(car_details[1]))
-        self.color_edit = QLineEdit(car_details[2])
-        self.car_type_edit = QLineEdit(car_details[3])
-        self.fuel_capacity_edit = QLineEdit(f"{car_details[4]}L")
-        self.material_consumption_edit = QLineEdit(car_details[5])
-        self.seat_num_edit = QLineEdit(str(car_details[6]))
-        self.engine_edit = QLineEdit(car_details[7])
-        self.price_edit = QLineEdit(str(car_details[8]))
+        self.ten_xe_edit = QLineEdit(car_details[0])
+        self.nam_san_xuat_edit = QLineEdit(str(car_details[1]))
+        self.mau_sac_edit = QLineEdit(car_details[2])
+        self.loai_xe_edit = QLineEdit(car_details[3])
+        self.dung_tich_nhien_lieu_edit = QLineEdit(f"{car_details[4]}L")
+        self.tieu_thu_nhien_lieu_edit = QLineEdit(car_details[5])
+        self.so_ghe_edit = QLineEdit(str(car_details[6]))
+        self.dong_co_edit = QLineEdit(car_details[7])
+        self.gia_edit = QLineEdit(str(car_details[8]))
         self.vin_edit = QLineEdit(car_details[9])
-        self.warranty_year_edit = QLineEdit(str(car_details[10]))
-        self.status_edit = QComboBox()
-        self.status_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán"])
-        self.status_edit.setCurrentText(car_details[11])
+        self.nam_bao_hanh_edit = QLineEdit(str(car_details[10]))
+        self.trang_thai_edit = QComboBox()
+        self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán", "Đặt cọc"])
+        self.trang_thai_edit.setCurrentText(car_details[11])
 
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
-        layout.addWidget(self.name_edit, 0, 1)
+        layout.addWidget(self.ten_xe_edit, 0, 1)
         layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
-        layout.addWidget(self.produced_year_edit, 0, 3)
+        layout.addWidget(self.nam_san_xuat_edit, 0, 3)
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
-        layout.addWidget(self.color_edit, 1, 1)
+        layout.addWidget(self.mau_sac_edit, 1, 1)
         layout.addWidget(QLabel("Loại xe:"), 1, 2)
-        layout.addWidget(self.car_type_edit, 1, 3)
+        layout.addWidget(self.loai_xe_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
-        layout.addWidget(self.fuel_capacity_edit, 2, 1)
+        layout.addWidget(self.dung_tich_nhien_lieu_edit, 2, 1)
         layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
-        layout.addWidget(self.material_consumption_edit, 2, 3)
+        layout.addWidget(self.tieu_thu_nhien_lieu_edit, 2, 3)
 
         layout.addWidget(QLabel("Số ghế:"), 3, 0)
-        layout.addWidget(self.seat_num_edit, 3, 1)
+        layout.addWidget(self.so_ghe_edit, 3, 1)
         layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(self.engine_edit, 3, 3)
+        layout.addWidget(self.dong_co_edit, 3, 3)
 
         layout.addWidget(QLabel("Giá:"), 4, 0)
-        layout.addWidget(self.price_edit, 4, 1)
+        layout.addWidget(self.gia_edit, 4, 1)
         layout.addWidget(QLabel("VIN:"), 4, 2)
         layout.addWidget(self.vin_edit, 4, 3)
 
         layout.addWidget(QLabel("Bảo hành:"), 5, 0)
-        layout.addWidget(self.warranty_year_edit, 5, 1)
+        layout.addWidget(self.nam_bao_hanh_edit, 5, 1)
         layout.addWidget(QLabel("Trạng thái:"), 5, 2)
-        layout.addWidget(self.status_edit, 5, 3)
+        layout.addWidget(self.trang_thai_edit, 5, 3)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
@@ -66,18 +66,18 @@ class CarEditDialog(QDialog):
     def accept(self):
         update_car(
             self.car_id,
-            self.name_edit.text(),
-            int(self.produced_year_edit.text()),
-            self.color_edit.text(),
-            self.car_type_edit.text(),
-            self.fuel_capacity_edit.text().replace('L', '').strip(),
-            self.material_consumption_edit.text(),
-            int(self.seat_num_edit.text()),
-            self.engine_edit.text(),
-            float(self.price_edit.text()),
+            self.ten_xe_edit.text(),
+            int(self.nam_san_xuat_edit.text()),
+            self.mau_sac_edit.text(),
+            self.loai_xe_edit.text(),
+            self.dung_tich_nhien_lieu_edit.text().replace('L', '').strip(),
+            self.tieu_thu_nhien_lieu_edit.text(),
+            int(self.so_ghe_edit.text()),
+            self.dong_co_edit.text(),
+            float(self.gia_edit.text()),
             self.vin_edit.text(),
-            int(self.warranty_year_edit.text()),
-            self.status_edit.currentText()
+            int(self.nam_bao_hanh_edit.text()),
+            self.trang_thai_edit.currentText()
         )
         super().accept()
 
@@ -136,49 +136,49 @@ class CarAddDialog(QDialog):
     def init_ui(self):
         layout = QGridLayout(self)
 
-        self.name_edit = QLineEdit()
-        self.produced_year_edit = QLineEdit()
-        self.color_edit = QLineEdit()
-        self.car_type_edit = QLineEdit()
-        self.fuel_capacity_edit = QLineEdit()
-        self.material_consumption_edit = QLineEdit()
-        self.seat_num_edit = QLineEdit()
-        self.engine_edit = QLineEdit()
-        self.price_edit = QLineEdit()
+        self.ten_xe_edit = QLineEdit()
+        self.nam_san_xuat_edit = QLineEdit()
+        self.mau_sac_edit = QLineEdit()
+        self.loai_xe_edit = QLineEdit()
+        self.dung_tich_nhien_lieu_edit = QLineEdit()
+        self.tieu_thu_nhien_lieu_edit = QLineEdit()
+        self.so_ghe_edit = QLineEdit()
+        self.dong_co_edit = QLineEdit()
+        self.gia_edit = QLineEdit()
         self.vin_edit = QLineEdit()
-        self.warranty_year_edit = QLineEdit()
-        self.status_edit = QComboBox()
-        self.status_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán"])
+        self.nam_bao_hanh_edit = QLineEdit()
+        self.trang_thai_edit = QComboBox()
+        self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán", "Đặt cọc"])
 
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
-        layout.addWidget(self.name_edit, 0, 1)
+        layout.addWidget(self.ten_xe_edit, 0, 1)
         layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
-        layout.addWidget(self.produced_year_edit, 0, 3)
+        layout.addWidget(self.nam_san_xuat_edit, 0, 3)
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
-        layout.addWidget(self.color_edit, 1, 1)
+        layout.addWidget(self.mau_sac_edit, 1, 1)
         layout.addWidget(QLabel("Loại xe:"), 1, 2)
-        layout.addWidget(self.car_type_edit, 1, 3)
+        layout.addWidget(self.loai_xe_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
-        layout.addWidget(self.fuel_capacity_edit, 2, 1)
+        layout.addWidget(self.dung_tich_nhien_lieu_edit, 2, 1)
         layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
-        layout.addWidget(self.material_consumption_edit, 2, 3)
+        layout.addWidget(self.tieu_thu_nhien_lieu_edit, 2, 3)
 
         layout.addWidget(QLabel("Số ghế:"), 3, 0)
-        layout.addWidget(self.seat_num_edit, 3, 1)
+        layout.addWidget(self.so_ghe_edit, 3, 1)
         layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(self.engine_edit, 3, 3)
+        layout.addWidget(self.dong_co_edit, 3, 3)
 
         layout.addWidget(QLabel("Giá:"), 4, 0)
-        layout.addWidget(self.price_edit, 4, 1)
+        layout.addWidget(self.gia_edit, 4, 1)
         layout.addWidget(QLabel("VIN:"), 4, 2)
         layout.addWidget(self.vin_edit, 4, 3)
 
         layout.addWidget(QLabel("Bảo hành:"), 5, 0)
-        layout.addWidget(self.warranty_year_edit, 5, 1)
+        layout.addWidget(self.nam_bao_hanh_edit, 5, 1)
         layout.addWidget(QLabel("Trạng thái:"), 5, 2)
-        layout.addWidget(self.status_edit, 5, 3)
+        layout.addWidget(self.trang_thai_edit, 5, 3)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
@@ -187,17 +187,18 @@ class CarAddDialog(QDialog):
 
     def accept(self):
         add_car(
-            self.name_edit.text(),
-            int(self.produced_year_edit.text()),
-            self.color_edit.text(),
-            self.car_type_edit.text(),
-            self.fuel_capacity_edit.text().replace('L', '').strip(),
-            self.material_consumption_edit.text(),
-            int(self.seat_num_edit.text()),
-            self.engine_edit.text(),
-            float(self.price_edit.text()),
+            self.ten_xe_edit.text(),
+            int(self.nam_san_xuat_edit.text()),
+            self.mau_sac_edit.text(),
+            self.loai_xe_edit.text(),
+            self.dung_tich_nhien_lieu_edit.text().replace('L', '').strip(),
+            self.tieu_thu_nhien_lieu_edit.text(),
+            int(self.so_ghe_edit.text()),
+            self.dong_co_edit.text(),
+            float(self.gia_edit.text()),
             self.vin_edit.text(),
-            int(self.warranty_year_edit.text()),
-            self.status_edit.currentText()
+            int(self.nam_bao_hanh_edit.text()),
+            self.trang_thai_edit.currentText()
         )
         super().accept()
+

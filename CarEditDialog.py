@@ -5,79 +5,32 @@ from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QPushButton, \
     QTableWidget, QTableWidgetItem, QMessageBox, QSizePolicy, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
 
-
-# Database setup
-def init_db():
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS cars (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            type TEXT,
-            year INTEGER,
-            color TEXT,
-            size TEXT,
-            engine TEXT,
-            max_power TEXT,
-            fuel_capacity TEXT,
-            transmission TEXT,
-            fuel_consumption TEXT,
-            drivetrain TEXT,
-            seats INTEGER,
-            airbags INTEGER,
-            warranty TEXT,
-            price TEXT,
-            dealer TEXT,
-            status TEXT
-        )
-    ''')
-
-    # Insert sample data
-    sample_data = [
-        ("VINFAST LUX A2.0", "Sedan", 2021, "Trắng", "4,973 x 1,900 x 1,464 mm", "2.0L", "228 HP", "70L", "Tự động 8 cấp", "8.5L/100km", "RWD", 5, 6, "5 năm", "2.114.000.000 VND", "Vinfast Dealer 1", "Đã bán"),
-        ("VINFAST VF 9", "SUV", 2022, "Trắng", "5,120 x 2,000 x 1,721 mm", "Electric", "402 HP", "90 kWh", "Single-speed", "N/A", "AWD", 7, 6, "10 năm", "2.114.000.000 VND", "Vinfast Dealer 2", "Chưa bán"),
-        ("VINFAST President", "SUV", 2022, "Trắng", "4,750 x 1,900 x 1,660 mm", "Electric", "402 HP", "90 kWh", "Single-speed", "N/A", "AWD", 5, 6, "10 năm", "2.114.000.000 VND", "Vinfast Dealer 3", "Đặt cọc")
-    ]
-
-    cursor.executemany('''
-        INSERT INTO cars (name, type, year, color, size, engine, max_power, fuel_capacity, transmission, fuel_consumption, drivetrain, seats, airbags, warranty, price, dealer, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', sample_data)
-
-    conn.commit()
-    conn.close()
-
-
 def get_cars():
     conn = sqlite3.connect('showroom.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT id, name, type, year, color, warranty, price, status FROM cars')
+    cursor.execute('SELECT id, name, produced_year, color, car_type, warranty_year, price, status FROM Car')
     cars = cursor.fetchall()
     conn.close()
     return cars
 
-
 def get_car_details(car_id):
     conn = sqlite3.connect('showroom.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT name, type, year, color, warranty, price, status FROM cars WHERE id = ?', (car_id,))
+    cursor.execute('SELECT name, produced_year, color, car_type, warranty_year, price, status FROM Car WHERE id = ?', (car_id,))
     car = cursor.fetchone()
     conn.close()
     return car
 
-
-def update_car(car_id, name, car_type, year, color, warranty, price, status):
+def update_car(car_id, name, produced_year, color, car_type, warranty_year, price, status):
     conn = sqlite3.connect('showroom.db')
     cursor = conn.cursor()
     cursor.execute('''
-        UPDATE cars
-        SET name = ?, type = ?, year = ?, color = ?, warranty = ?, price = ?, status = ?
+        UPDATE Car
+        SET name = ?, produced_year = ?, color = ?, car_type = ?, warranty_year = ?, price = ?, status = ?
         WHERE id = ?
-    ''', (name, car_type, year, color, warranty, price, status, car_id))
+    ''', (name, produced_year, color, car_type, warranty_year, price, status, car_id))
     conn.commit()
     conn.close()
-
 
 class CarEditDialog(QDialog):
     def __init__(self, car_id, parent=None):
@@ -92,18 +45,18 @@ class CarEditDialog(QDialog):
         car_details = get_car_details(self.car_id)
 
         self.name_edit = QLineEdit(car_details[0])
-        self.type_edit = QLineEdit(car_details[1])
-        self.year_edit = QLineEdit(str(car_details[2]))
-        self.color_edit = QLineEdit(car_details[3])
-        self.warranty_edit = QLineEdit(car_details[4])
+        self.produced_year_edit = QLineEdit(str(car_details[1]))
+        self.color_edit = QLineEdit(car_details[2])
+        self.car_type_edit = QLineEdit(car_details[3])
+        self.warranty_year_edit = QLineEdit(car_details[4])
         self.price_edit = QLineEdit(car_details[5])
         self.status_edit = QLineEdit(car_details[6])
 
         layout.addRow("Tên xe:", self.name_edit)
-        layout.addRow("Loại xe:", self.type_edit)
-        layout.addRow("Năm sản xuất:", self.year_edit)
+        layout.addRow("Năm sản xuất:", self.produced_year_edit)
         layout.addRow("Màu sắc:", self.color_edit)
-        layout.addRow("Bảo hành:", self.warranty_edit)
+        layout.addRow("Loại xe:", self.car_type_edit)
+        layout.addRow("Bảo hành:", self.warranty_year_edit)
         layout.addRow("Giá:", self.price_edit)
         layout.addRow("Trạng thái:", self.status_edit)
 
@@ -116,15 +69,14 @@ class CarEditDialog(QDialog):
         update_car(
             self.car_id,
             self.name_edit.text(),
-            self.type_edit.text(),
-            int(self.year_edit.text()),
+            int(self.produced_year_edit.text()),
             self.color_edit.text(),
-            self.warranty_edit.text(),
+            self.car_type_edit.text(),
+            self.warranty_year_edit.text(),
             self.price_edit.text(),
             self.status_edit.text()
         )
         super().accept()
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -132,18 +84,16 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Showroom Vinfast")
         self.setGeometry(100, 100, 1500, 900)
 
-        # Main container widget
         main_widget = QWidget()
         main_layout = QHBoxLayout(main_widget)
 
-        # Left sidebar
         sidebar = QWidget()
         sidebar.setFixedWidth(300)
         sidebar_layout = QVBoxLayout(sidebar)
 
         title = QLabel("<span style='color: #2DB4AE;'>Showroom</span><span style='color: #FBCE49;'> VinFast</span>")
         title.setFont(QFont('MulishRoman', 20, QFont.Weight.Bold))
-        title.setStyleSheet("color: #2DB4AE;")  # Light green color
+        title.setStyleSheet("color: #2DB4AE;")
         sidebar_layout.addWidget(title)
 
         user_label = QLabel("Phạm nhật vượng\nID: 3456")
@@ -172,7 +122,6 @@ class MainWindow(QMainWindow):
         sidebar_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.addWidget(sidebar)
 
-        # Main content area
         content = QWidget()
         content_layout = QVBoxLayout(content)
 
@@ -182,7 +131,7 @@ class MainWindow(QMainWindow):
 
         self.car_table = QTableWidget()
         self.car_table.setColumnCount(10)
-        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Loại xe", "Năm sản xuất", "Màu sắc", "Bảo hành", "Giá", "Trạng thái", "Thông tin", "Sửa", "Xóa"])
+        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Năm sản xuất", "Màu sắc", "Loại xe", "Bảo hành", "Giá", "Trạng thái", "Thông tin", "Sửa", "Xóa"])
         self.car_table.horizontalHeader().setStretchLastSection(True)
         self.car_table.setAlternatingRowColors(True)
         self.car_table.setStyleSheet("QHeaderView::section { background-color: #2DB4AE; color: white; }")
@@ -206,8 +155,8 @@ class MainWindow(QMainWindow):
             row_position = self.car_table.rowCount()
             self.car_table.insertRow(row_position)
             self.car_table.setItem(row_position, 0, QTableWidgetItem(car[1]))
-            self.car_table.setItem(row_position, 1, QTableWidgetItem(car[2]))
-            self.car_table.setItem(row_position, 2, QTableWidgetItem(str(car[3])))
+            self.car_table.setItem(row_position, 1, QTableWidgetItem(str(car[2])))
+            self.car_table.setItem(row_position, 2, QTableWidgetItem(car[3]))
             self.car_table.setItem(row_position, 3, QTableWidgetItem(car[4]))
             self.car_table.setItem(row_position, 4, QTableWidgetItem(car[5]))
             self.car_table.setItem(row_position, 5, QTableWidgetItem(car[6]))
@@ -220,7 +169,6 @@ class MainWindow(QMainWindow):
                 status_item.setForeground(Qt.GlobalColor.red)
             self.car_table.setItem(row_position, 6, status_item)
 
-            # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
             info_button.setIcon(QIcon("img/info.svg"))
             info_button.setFixedSize(30, 30)
@@ -244,31 +192,27 @@ class MainWindow(QMainWindow):
 
         self.car_table.resizeColumnsToContents()
 
-        # Adjust column widths to be slightly wider than content
         for col in range(self.car_table.columnCount() - 3):
             current_width = self.car_table.columnWidth(col)
             self.car_table.setColumnWidth(col, current_width + 20)
 
-        # Ensure button columns are only as wide as the buttons
         button_columns = [7, 8, 9]
         for col in button_columns:
             self.car_table.setColumnWidth(col, 40)
 
     def add_car(self):
-        # Logic to add a car to the database (could show a dialog to input car details)
         pass
 
     def delete_car(self, car_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('DELETE FROM cars WHERE id = ?', (car_id,))
+        cursor.execute('DELETE FROM Car WHERE id = ?', (car_id,))
         conn.commit()
         conn.close()
         QMessageBox.information(self, "Deleted", f"Car ID '{car_id}' has been deleted.")
         self.load_cars()
 
     def show_car_info(self, car_id):
-        # Logic to show car details (could show a dialog with car details)
         car_details = get_car_details(car_id)
         QMessageBox.information(self, "Thông tin xe", f"Thông tin chi tiết của xe:\n\nTên xe: {car_details[0]}\nLoại xe: {car_details[1]}\nNăm sản xuất: {car_details[2]}\nMàu sắc: {car_details[3]}\nBảo hành: {car_details[4]}\nGiá: {car_details[5]}\nTrạng thái: {car_details[6]}")
 
@@ -277,9 +221,7 @@ class MainWindow(QMainWindow):
         if dialog.exec():
             self.load_cars()
 
-
 if __name__ == '__main__':
-    init_db()
     app = QApplication(sys.argv)
     app.setStyleSheet("""
         QPushButton { 

@@ -1,15 +1,17 @@
+import sqlite3
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QLineEdit, QPushButton, QStackedWidget
-from PyQt6.QtGui import QFont, QIcon
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QLineEdit, QPushButton, QStackedWidget, QMessageBox
+from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
+from database import get_user, add_user
 
 class LoginWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
+        self.main_window = main_window
         self.setWindowTitle("Showroom Vinfast")
         self.setGeometry(100, 100, 500, 400)
 
-        # Main container widget
         self.main_widget = QWidget()
         self.main_layout = QVBoxLayout(self.main_widget)
 
@@ -42,7 +44,7 @@ class LoginWindow(QMainWindow):
 
         self.username_input = QLineEdit()
         self.username_input.setFixedHeight(40)
-        self.username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px;")
+        self.username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.username_input)
 
         password_label = QLabel("Mật khẩu")
@@ -53,7 +55,7 @@ class LoginWindow(QMainWindow):
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.password_input.setFixedHeight(40)
-        self.password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px;")
+        self.password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.password_input)
 
         layout.addStretch()
@@ -97,7 +99,7 @@ class LoginWindow(QMainWindow):
 
         self.reg_username_input = QLineEdit()
         self.reg_username_input.setFixedHeight(40)
-        self.reg_username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px;")
+        self.reg_username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.reg_username_input)
 
         password_label = QLabel("Mật khẩu")
@@ -108,7 +110,7 @@ class LoginWindow(QMainWindow):
         self.reg_password_input = QLineEdit()
         self.reg_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.reg_password_input.setFixedHeight(40)
-        self.reg_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px;")
+        self.reg_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.reg_password_input)
 
         confirm_password_label = QLabel("Xác nhận Mật khẩu")
@@ -119,7 +121,7 @@ class LoginWindow(QMainWindow):
         self.confirm_password_input = QLineEdit()
         self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.confirm_password_input.setFixedHeight(40)
-        self.confirm_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px;")
+        self.confirm_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.confirm_password_input)
 
         layout.addStretch()
@@ -152,20 +154,56 @@ class LoginWindow(QMainWindow):
         self.stacked_widget.setCurrentWidget(self.register_widget)
 
     def login(self):
-        # Handle login logic here
-        pass
+        print("Attempting to log in")
+        username = self.username_input.text()
+        password = self.password_input.text()
+        user = get_user(username)
+
+        if user and user[2] == password:  # Assuming password is stored in the third column
+            print("Login successful")
+            QMessageBox.information(self, "Thành công", "Đăng nhập thành công!")
+            self.main_window.show_main_window(user[3], user[0], user[4])  # Pass role_id as well
+            self.hide()  # Hide the login window instead of closing it
+        else:
+            print("Login failed")
+            QMessageBox.warning(self, "Thất bại", "Tên đăng nhập hoặc mật khẩu không đúng.")
 
     def register(self):
-        # Handle registration logic here
-        pass
+        print("Attempting to register")
+        username = self.reg_username_input.text()
+        password = self.reg_password_input.text()
+        confirm_password = self.confirm_password_input.text()
+
+        if password != confirm_password:
+            print("Passwords do not match")
+            QMessageBox.warning(self, "Thất bại", "Mật khẩu và xác nhận mật khẩu không khớp.")
+            return
+
+        # Thêm thông tin đăng ký mặc định (cần chỉnh sửa để lấy từ form đăng ký)
+        name = "Tên mẫu"
+        phone = "0000000000"
+        email = "example@example.com"
+        address = "Địa chỉ mẫu"
+        gender = 1  # 1 for male, 0 for female
+        role_id = 1  # Default role_id
+
+        try:
+            add_user(username, password, name, phone, email, address, gender, role_id)
+            print("Registration successful")
+            QMessageBox.information(self, "Thành công", "Đăng ký thành công!")
+            self.show_login()
+        except sqlite3.IntegrityError:
+            print("Username already exists")
+            QMessageBox.warning(self, "Thất bại", "Tên đăng nhập đã tồn tại.")
 
 if __name__ == '__main__':
+    from main import MainWindow
+    print("Starting login application")
     app = QApplication(sys.argv)
     app.setStyleSheet("""
         QWidget {
             background-color: #000000;
         }
     """)
-    window = LoginWindow()
-    window.show()
+    main_window = MainWindow()
     sys.exit(app.exec())

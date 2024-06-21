@@ -16,7 +16,7 @@ class CarEditDialog(QDialog):
         self.name_edit = QLineEdit(car_details[0])
         self.produced_year_edit = QLineEdit(str(car_details[1]))
         self.color_edit = QLineEdit(car_details[2])
-        self.size_edit = QLineEdit(car_details[3])
+        self.car_type_edit = QLineEdit(car_details[3])
         self.fuel_capacity_edit = QLineEdit(f"{car_details[4]}L")
         self.material_consumption_edit = QLineEdit(car_details[5])
         self.seat_num_edit = QLineEdit(str(car_details[6]))
@@ -35,8 +35,8 @@ class CarEditDialog(QDialog):
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(self.color_edit, 1, 1)
-        layout.addWidget(QLabel("Kích thước:"), 1, 2)
-        layout.addWidget(self.size_edit, 1, 3)
+        layout.addWidget(QLabel("Loại xe:"), 1, 2)
+        layout.addWidget(self.car_type_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
         layout.addWidget(self.fuel_capacity_edit, 2, 1)
@@ -69,7 +69,7 @@ class CarEditDialog(QDialog):
             self.name_edit.text(),
             int(self.produced_year_edit.text()),
             self.color_edit.text(),
-            self.size_edit.text(),
+            self.car_type_edit.text(),
             self.fuel_capacity_edit.text().replace('L', '').strip(),
             self.material_consumption_edit.text(),
             int(self.seat_num_edit.text()),
@@ -100,7 +100,7 @@ class CarInfoDialog(QDialog):
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(QLabel(car_details[2]), 1, 1)
-        layout.addWidget(QLabel("Kích thước:"), 1, 2)
+        layout.addWidget(QLabel("Loại xe:"), 1, 2)
         layout.addWidget(QLabel(car_details[3]), 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
@@ -139,7 +139,7 @@ class CarAddDialog(QDialog):
         self.name_edit = QLineEdit()
         self.produced_year_edit = QLineEdit()
         self.color_edit = QLineEdit()
-        self.size_edit = QLineEdit()
+        self.car_type_edit = QLineEdit()
         self.fuel_capacity_edit = QLineEdit()
         self.material_consumption_edit = QLineEdit()
         self.seat_num_edit = QLineEdit()
@@ -157,8 +157,8 @@ class CarAddDialog(QDialog):
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(self.color_edit, 1, 1)
-        layout.addWidget(QLabel("Kích thước:"), 1, 2)
-        layout.addWidget(self.size_edit, 1, 3)
+        layout.addWidget(QLabel("Loại xe:"), 1, 2)
+        layout.addWidget(self.car_type_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
         layout.addWidget(self.fuel_capacity_edit, 2, 1)
@@ -190,7 +190,7 @@ class CarAddDialog(QDialog):
             self.name_edit.text(),
             int(self.produced_year_edit.text()),
             self.color_edit.text(),
-            self.size_edit.text(),
+            self.car_type_edit.text(),
             self.fuel_capacity_edit.text().replace('L', '').strip(),
             self.material_consumption_edit.text(),
             int(self.seat_num_edit.text()),

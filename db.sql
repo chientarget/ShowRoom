@@ -4,7 +4,7 @@ CREATE TABLE Car (
     produced_year INTEGER,
     color TEXT,
     name TEXT,
-    size TEXT,
+    car_type TEXT,
     fuel_capacity TEXT,
     material_consumption TEXT,
     seat_num INTEGER,
@@ -138,7 +138,7 @@ CREATE TABLE History (
 
 
 -- Dữ liệu mẫu cho bảng Car
-INSERT INTO Car (produced_year, color, name, size, fuel_capacity, material_consumption, seat_num, engine, price, vin, dealer_id, warranty_year, series_id, manu_facturer_id, drive_id, model_id, airbags) VALUES
+INSERT INTO Car (produced_year, color, name, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, dealer_id, warranty_year, series_id, manu_facturer_id, drive_id, model_id, airbags) VALUES
 (2024, 'Đỏ', 'VinFast VF 6', 'Crossover', '90', '6.5L/100km', 5, 'Điện', 675000000, 'VIN001', 1, 3, 1, 1, 1, 1, '6 túi khí'),
 (2024, 'Xanh', 'VinFast VF 7', 'SUV', '90', '7.5L/100km', 5, 'Điện', 850000000, 'VIN002', 1, 3, 1, 1, 1, 2, '8 túi khí'),
 (2024, 'Đen', 'VinFast VF 8', 'SUV', '90', '8.0L/100km', 7, 'Điện', 1050000000, 'VIN003', 2, 3, 1, 1, 1, 3, '10 túi khí'),
@@ -212,11 +212,11 @@ INSERT INTO Dealer (name, address, phone, zip, email, open_time, close_time, des
 
 -- Dữ liệu mẫu cho bảng Human_resources
 INSERT INTO Human_resources (username, password, name, phone, email, address, gender, role_id) VALUES
-('nv001', 'pass123', 'Nguyễn Văn A', '0901234567', 'nva@vinfast.vn', 'Hà Nội', 1, 1),
-('nv002', 'pass234', 'Trần Thị B', '0912345678', 'ttb@vinfast.vn', 'TP.HCM', 0, 2),
-('nv003', 'pass345', 'Lê Văn C', '0923456789', 'lvc@hondaoto.vn', 'Hà Nội', 1, 3),
-('nv004', 'pass456', 'Phạm Thị D', '0934567890', 'ptd@toyotavn.com.vn', 'TP.HCM', 0, 2),
-('nv005', 'pass567', 'Hoàng Văn E', '0945678901', 'hve@mazdavn.vn', 'Hà Nội', 1, 3);
+('c1', '123', 'Nguyễn Văn A', '0901234567', 'nva@vinfast.vn', 'Hà Nội', 1, 1),
+('c2', '123', 'Trần Thị B', '0912345678', 'ttb@vinfast.vn', 'TP.HCM', 0, 2),
+('c3', '123', 'Lê Văn C', '0923456789', 'lvc@hondaoto.vn', 'Hà Nội', 1, 3),
+('c4', '123', 'Phạm Thị D', '0934567890', 'ptd@toyotavn.com.vn', 'TP.HCM', 0, 2),
+('c5', '123', 'Hoàng Văn E', '0945678901', 'hve@mazdavn.vn', 'Hà Nội', 1, 3);
 
 -- Dữ liệu mẫu cho bảng Role
 INSERT INTO Role (name) VALUES

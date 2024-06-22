@@ -1,10 +1,8 @@
 # main.py
 import sys
-
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QFont
 from car_list import CarListWidget
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -16,8 +14,6 @@ class MainWindow(QMainWindow):
         self.main_layout = QHBoxLayout(self.main_widget)
 
         self.sidebar = self.create_sidebar()
-        # self.sidebar.setStyleSheet("border: 2px solid #2DB4AE;")
-
         self.main_layout.addWidget(self.sidebar)
 
         self.content = CarListWidget()
@@ -41,7 +37,7 @@ class MainWindow(QMainWindow):
         self.title.setFont(QFont('MulishRoman', 30, QFont.Weight.Bold))
         self.title.setStyleSheet("font-size: 30px;  ")
         self.sidebar_layout.addWidget(self.title)
-        self.user_label = QLabel("Phạm nhật vượng\nID: 3456")
+        self.user_label = QLabel("Có vẻ chưa đăng nhập :)))")
         self.user_label.setFont(QFont('MulishRoman', 15))
         self.user_label.setStyleSheet("color: #FFFFFF; background-color: transparent; padding: 10px;  font-size:18px; font-weight: bold;")
         self.sidebar_layout.addWidget(self.user_label)
@@ -75,7 +71,9 @@ class MainWindow(QMainWindow):
     def show_main_window(self, name, user_id, role_id):
         self.user_label.setText(f"{name}\nID: {user_id}")
         self.user_role = role_id  # Store the user role
-        self.content.set_permissions(role_id)  # Pass the role to the content widget
+        # Kiểm tra nếu CarListWidget có phương thức set_permissions
+        if hasattr(self.content, 'set_permissions'):
+            self.content.set_permissions(role_id)  # Pass the role to the content widget
         self.show()
 
     def logout(self):
@@ -88,10 +86,13 @@ if __name__ == '__main__':
     print("Starting application")
     from Login import LoginWindow
     app = QApplication(sys.argv)
-    # Load and apply stylesheet
     with open("style.qss", "r") as f:
         stylesheet = f.read()
         app.setStyleSheet(stylesheet)
     main_window = MainWindow()
-    main_window.show()
+
+    login_window = LoginWindow(main_window)  # Create the LoginWindow
+    login_window.show()
+
+    # main_window.show_main_window("Admin", 1, 1)
     sys.exit(app.exec())

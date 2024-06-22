@@ -1,3 +1,4 @@
+# Login.py
 import sqlite3
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QLineEdit, QPushButton, QStackedWidget, QMessageBox
@@ -161,9 +162,10 @@ class LoginWindow(QMainWindow):
 
         if user and user[2] == password:  # Assuming password is stored in the third column
             print("Login successful")
-            QMessageBox.information(self, "Thành công", "Đăng nhập thành công!")
-            self.main_window.show_main_window(user[3], user[0], user[4])  # Pass role_id as well
-            self.hide()  # Hide the login window instead of closing it
+            # QMessageBox.information(self, "Thành công", "Đăng nhập thành công!")
+            self.hide()
+            self.main_window.show_main_window(user[3], user[0], user[4])
+
         else:
             print("Login failed")
             QMessageBox.warning(self, "Thất bại", "Tên đăng nhập hoặc mật khẩu không đúng.")
@@ -206,4 +208,6 @@ if __name__ == '__main__':
         }
     """)
     main_window = MainWindow()
+    login_window = LoginWindow(main_window)  # Create the LoginWindow
+    login_window.show()
     sys.exit(app.exec())

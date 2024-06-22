@@ -1,3 +1,4 @@
+# main.py
 import sys
 
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
@@ -35,7 +36,6 @@ class MainWindow(QMainWindow):
         sidebar = QWidget()
         sidebar.setFixedWidth(300)
         self.sidebar_layout = QVBoxLayout(sidebar)
-
 
         self.title = QLabel("<span style='color: #2DB4AE;'>Showroom</span><span style='color: #FBCE49;'> VinFest</span>")
         self.title.setFont(QFont('MulishRoman', 30, QFont.Weight.Bold))

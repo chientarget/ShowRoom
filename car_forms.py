@@ -1,5 +1,8 @@
+# car_forms.py
 from PyQt6.QtWidgets import QDialog, QGridLayout, QLineEdit, QLabel, QDialogButtonBox, QComboBox
-from database import get_car_details, update_car, add_car
+from car import Car
+from database import get_car_details, add_car
+
 
 class CarEditDialog(QDialog):
     def __init__(self, car_id, parent=None):
@@ -11,22 +14,22 @@ class CarEditDialog(QDialog):
     def init_ui(self):
         layout = QGridLayout(self)
 
-        car_details = get_car_details(self.car_id)
+        car = Car.get_car_by_id(self.car_id)
 
-        self.ten_xe_edit = QLineEdit(car_details[0])
-        self.nam_san_xuat_edit = QLineEdit(str(car_details[1]))
-        self.mau_sac_edit = QLineEdit(car_details[2])
-        self.loai_xe_edit = QLineEdit(car_details[3])
-        self.dung_tich_nhien_lieu_edit = QLineEdit(f"{car_details[4]}L")
-        self.tieu_thu_nhien_lieu_edit = QLineEdit(car_details[5])
-        self.so_ghe_edit = QLineEdit(str(car_details[6]))
-        self.dong_co_edit = QLineEdit(car_details[7])
-        self.gia_edit = QLineEdit(str(car_details[8]))
-        self.vin_edit = QLineEdit(car_details[9])
-        self.nam_bao_hanh_edit = QLineEdit(str(car_details[10]))
+        self.ten_xe_edit = QLineEdit(car.name)
+        self.nam_san_xuat_edit = QLineEdit(str(car.produced_year))
+        self.mau_sac_edit = QLineEdit(car.color)
+        self.loai_xe_edit = QLineEdit(car.car_type)
+        self.dung_tich_nhien_lieu_edit = QLineEdit(f"{car.fuel_capacity}L")
+        self.tieu_thu_nhien_lieu_edit = QLineEdit(car.material_consumption)
+        self.so_ghe_edit = QLineEdit(str(car.seat_num))
+        self.dong_co_edit = QLineEdit(car.engine)
+        self.gia_edit = QLineEdit(str(car.price))
+        self.vin_edit = QLineEdit(car.vin)
+        self.nam_bao_hanh_edit = QLineEdit(str(car.warranty_year))
         self.trang_thai_edit = QComboBox()
         self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán", "Đặt cọc"])
-        self.trang_thai_edit.setCurrentText(car_details[11])
+        self.trang_thai_edit.setCurrentText(car.status)
 
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
         layout.addWidget(self.ten_xe_edit, 0, 1)
@@ -64,7 +67,7 @@ class CarEditDialog(QDialog):
         layout.addWidget(self.button_box, 6, 0, 1, 4)
 
     def accept(self):
-        update_car(
+        car = Car(
             self.car_id,
             self.ten_xe_edit.text(),
             int(self.nam_san_xuat_edit.text()),
@@ -79,7 +82,9 @@ class CarEditDialog(QDialog):
             int(self.nam_bao_hanh_edit.text()),
             self.trang_thai_edit.currentText()
         )
+        car.update()
         super().accept()
+
 
 class CarInfoDialog(QDialog):
     def __init__(self, car_id, parent=None):

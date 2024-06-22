@@ -1,7 +1,8 @@
+# car_list.py
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QSizePolicy, QMessageBox, QHBoxLayout
 from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtCore import Qt
-from database import get_cars, delete_car
+from car import Car
 from car_forms import CarEditDialog, CarInfoDialog, CarAddDialog
 
 def format_price(price):
@@ -37,7 +38,6 @@ class CarListWidget(QWidget):
         add_car_button.setProperty("add_car_button", True)
         self.summary_layout.addWidget(add_car_button, alignment=Qt.AlignmentFlag.AlignRight)
 
-
         layout.addLayout(self.summary_layout)
 
         self.car_table = QTableWidget()
@@ -56,7 +56,7 @@ class CarListWidget(QWidget):
 
     def load_cars(self):
         self.car_table.setRowCount(0)
-        cars = get_cars()
+        cars = Car.get_all_cars()
         sold_count = 0
         not_sold_count = 0
         pending_count = 0
@@ -65,34 +65,34 @@ class CarListWidget(QWidget):
         for car in cars:
             row_position = self.car_table.rowCount()
             self.car_table.insertRow(row_position)
-            self.car_table.setItem(row_position, 0, QTableWidgetItem(car[1]))  # name
-            self.car_table.setItem(row_position, 1, QTableWidgetItem(str(car[2])))  # produced_year
-            self.car_table.setItem(row_position, 2, QTableWidgetItem(car[3]))  # color
-            self.car_table.setItem(row_position, 3, QTableWidgetItem(car[4]))  # car_type
-            self.car_table.setItem(row_position, 4, QTableWidgetItem(f"{car[10]} Năm"))  # warranty_year
+            self.car_table.setItem(row_position, 0, QTableWidgetItem(car.name))  # name
+            self.car_table.setItem(row_position, 1, QTableWidgetItem(str(car.produced_year)))  # produced_year
+            self.car_table.setItem(row_position, 2, QTableWidgetItem(car.color))  # color
+            self.car_table.setItem(row_position, 3, QTableWidgetItem(car.car_type))  # car_type
+            self.car_table.setItem(row_position, 4, QTableWidgetItem(f"{car.warranty_year} Năm"))  # warranty_year
 
             # Handle the price conversion
             try:
-                formatted_price = format_price(float(car[9]))  # price
+                formatted_price = format_price(float(car.price))  # price
             except ValueError:
                 formatted_price = "N/A"
 
             self.car_table.setItem(row_position, 5, QTableWidgetItem(formatted_price))
 
             # Format the fuel capacity
-            formatted_capacity = f"{car[5]}L"  # fuel_capacity
+            formatted_capacity = f"{car.fuel_capacity}L"  # fuel_capacity
             self.car_table.setItem(row_position, 6, QTableWidgetItem(formatted_capacity))
 
             # Display the status
-            status_item = QTableWidgetItem(car[11])  # status
+            status_item = QTableWidgetItem(car.status)  # status
             status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)  # Center-align text
-            if car[11] == "Đã bán":
+            if car.status == "Đã bán":
                 status_item.setBackground(QColor("#43BF5E"))
                 sold_count += 1
-            elif car[11] == "Chưa bán":
+            elif car.status == "Chưa bán":
                 status_item.setBackground(QColor("#8E8EE9"))
                 not_sold_count += 1
-            elif car[11] == "Đặt cọc":
+            elif car.status == "Đặt cọc":
                 status_item.setBackground(QColor("#E9938E"))
                 reserved_count += 1
             else:
@@ -104,19 +104,19 @@ class CarListWidget(QWidget):
             info_button = QPushButton()
             info_button.setIcon(QIcon("img/info.svg"))
             info_button.setStyleSheet("background-color: transparent;")
-            info_button.clicked.connect(lambda _, car_id=car[0]: self.show_car_info(car_id))
+            info_button.clicked.connect(lambda _, car_id=car.id: self.show_car_info(car_id))
             self.car_table.setCellWidget(row_position, 8, info_button)
 
             edit_button = QPushButton()
             edit_button.setIcon(QIcon("img/edit.svg"))
             edit_button.setStyleSheet("background-color: transparent;")
-            edit_button.clicked.connect(lambda _, car_id=car[0]: self.edit_car(car_id))
+            edit_button.clicked.connect(lambda _, car_id=car.id: self.edit_car(car_id))
             self.car_table.setCellWidget(row_position, 9, edit_button)
 
             delete_button = QPushButton()
             delete_button.setIcon(QIcon("img/delete.svg"))
             delete_button.setStyleSheet("background-color: transparent;")
-            delete_button.clicked.connect(lambda _, car_id=car[0]: self.delete_car(car_id))
+            delete_button.clicked.connect(lambda _, car_id=car.id: self.delete_car(car_id))
             self.car_table.setCellWidget(row_position, 10, delete_button)
 
         self.car_table.resizeColumnsToContents()
@@ -140,7 +140,7 @@ class CarListWidget(QWidget):
             self.load_cars()
 
     def delete_car(self, car_id):
-        delete_car(car_id)
+        Car.delete(car_id)
         QMessageBox.information(self, "Deleted", f"Car ID '{car_id}' has been deleted.")
         self.load_cars()
 

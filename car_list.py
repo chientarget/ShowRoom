@@ -131,7 +131,7 @@ class CarListWidget(QWidget):
         for col in button_columns:
             self.car_table.setColumnWidth(col, 40)
 
-        # Update the summary label
+        # Update the summary labels
         self.summary_label.setText(f"Đã bán: {sold_count}   Chưa bán: {not_sold_count}  Chờ mở bán: {pending_count}   Đặt cọc: {reserved_count}")
 
     def add_car(self):

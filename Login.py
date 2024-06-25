@@ -10,7 +10,7 @@ class LoginWindow(QMainWindow):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.setWindowTitle("Đăng nhập Showroom Vinfast")
+        self.setWindowTitle("Đăng nhập Showroom Vinfost")
         self.setGeometry(100, 100, 500, 400)
 
         self.main_widget = QWidget()
@@ -24,14 +24,19 @@ class LoginWindow(QMainWindow):
 
         self.stacked_widget.addWidget(self.login_widget)
         self.stacked_widget.addWidget(self.register_widget)
-
+        self.centerOnScreen()
         self.setCentralWidget(self.main_widget)
+
+    def centerOnScreen(self):
+        resolution = self.screen().availableGeometry()
+        self.move(int((resolution.width() / 2) - (self.frameSize().width() / 2)),
+                  int((resolution.height() / 2) - (self.frameSize().height() / 2)))
 
     def create_login_widget(self):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02; font-size:30px;'>VinFast</span>")
+        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02; font-size:30px;'>Vinfost</span>")
         title.setFont(QFont('Arial', 24, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -40,21 +45,26 @@ class LoginWindow(QMainWindow):
 
         username_label = QLabel("Tên đăng nhập")
         username_label.setFont(QFont('Arial', 14))
-        username_label.setStyleSheet("color: #FDBE02;")
+        username_label.setStyleSheet("color: #FDBE02; padding-left: 20px;")
         layout.addWidget(username_label)
 
         self.username_input = QLineEdit()
         self.username_input.setFixedHeight(40)
+        self.username_input.setText("huychien")
+        self.username_input.setPlaceholderText("Tên đăng nhâp")
         self.username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.username_input)
 
         password_label = QLabel("Mật khẩu")
         password_label.setFont(QFont('Arial', 14))
-        password_label.setStyleSheet("color: #FDBE02;")
+
+        password_label.setStyleSheet("color: #FDBE02;  padding-left: 20px;")
         layout.addWidget(password_label)
 
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password_input.setPlaceholderText("Mật khẩu")
+        self.password_input.setText("123")
         self.password_input.setFixedHeight(40)
         self.password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.password_input)
@@ -86,7 +96,7 @@ class LoginWindow(QMainWindow):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02;font-size:30px;'>VinFast</span>")
+        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02;font-size:30px;'>Vinfost</span>")
         title.setFont(QFont('Arial', 24, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -95,33 +105,36 @@ class LoginWindow(QMainWindow):
 
         username_label = QLabel("Tên đăng nhập")
         username_label.setFont(QFont('Arial', 14))
-        username_label.setStyleSheet("color: #FDBE02;")
+        username_label.setStyleSheet("color: #FDBE02;  padding-left: 20px;")
         layout.addWidget(username_label)
 
         self.reg_username_input = QLineEdit()
         self.reg_username_input.setFixedHeight(40)
+        self.reg_username_input.setPlaceholderText("Tên đăng nhập")
         self.reg_username_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.reg_username_input)
 
         password_label = QLabel("Mật khẩu")
         password_label.setFont(QFont('Arial', 14))
-        password_label.setStyleSheet("color: #FDBE02;")
+        password_label.setStyleSheet("color: #FDBE02;  padding-left: 20px;")
         layout.addWidget(password_label)
 
         self.reg_password_input = QLineEdit()
         self.reg_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.reg_password_input.setFixedHeight(40)
+        self.reg_password_input.setPlaceholderText("Mật khẩu")
         self.reg_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.reg_password_input)
 
         confirm_password_label = QLabel("Xác nhận Mật khẩu")
         confirm_password_label.setFont(QFont('Arial', 14))
-        confirm_password_label.setStyleSheet("color: #FDBE02;")
+        confirm_password_label.setStyleSheet("color: #FDBE02;  padding-left: 20px;")
         layout.addWidget(confirm_password_label)
 
         self.confirm_password_input = QLineEdit()
         self.confirm_password_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.confirm_password_input.setFixedHeight(40)
+        self.confirm_password_input.setPlaceholderText("Xác nhận mật khẩu")
         self.confirm_password_input.setStyleSheet("background-color: #FFFFFF; border-radius: 20px; padding-left: 10px; color: #000000; font-size: 16px;")
         layout.addWidget(self.confirm_password_input)
 

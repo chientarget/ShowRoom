@@ -1,4 +1,4 @@
-/* Global styles */
+
 * {
     font-family: 'Roboto';
     font-size: 14px;
@@ -31,23 +31,36 @@ QPushButton[add_car_button="true"] {
 
 }
 
-/* Label styles */
 QLabel {
     margin: 4px 0;
 }
 
 /* Input field styles */
-QTextEdit, QComboBox {
+QTextEdit {
     border: 1px solid #cccccc;
     border-radius: 10px;
     padding: 4px 8px;
     margin: 4px 0;
 }
 
+QComboBox {
+    border: 1px solid #cccccc;
+    border-radius: 13px;
+    padding: 8px;
+
+}
+QComboBox::down-arrow {
+    border: none;
+
+}
+
+QComboBox::drop-down {
+   border: none;
+}
 QLineEdit {
     background-color: #FFFFFF;
     border: 1px solid #CCCCCC;
-    border-radius: 10px; /* Thêm dòng này */
+    border-radius: 10px;
     padding-left: 10px;
     color: #000000;
     font-size: 16px;

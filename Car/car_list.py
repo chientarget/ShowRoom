@@ -1,9 +1,18 @@
 # car_list.py
+import os
+
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox, QHBoxLayout
 from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtCore import Qt
 from Car.car import Car
 from Car.car_forms import CarEditDialog, CarInfoDialog, CarAddDialog
+
+
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
+edit_icon_path = os.path.join(base_dir, "img", "img_crud", "edit.svg")
+delete_icon_path = os.path.join(base_dir, "img", "img_crud", "delete.svg")
+
 
 def format_price(price):
     if price >= 1_000_000_000:
@@ -31,18 +40,19 @@ class CarListWidget(QWidget):
         self.summary_label.setFont(QFont('Roboto', 11, QFont.Weight.Bold))
         self.summary_layout.addWidget(self.summary_label)
 
-        add_car_button = QPushButton("+ Thêm xe")
+        add_car_button = QPushButton("+   Thêm xe")
         add_car_button.setFont(QFont('Roboto', 12, QFont.Weight.Bold))
         add_car_button.setFixedSize(120, 40)
         add_car_button.clicked.connect(self.add_car)
         add_car_button.setProperty("add_car_button", True)
+        add_car_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         self.summary_layout.addWidget(add_car_button, alignment=Qt.AlignmentFlag.AlignRight)
 
         layout.addLayout(self.summary_layout)
 
         self.car_table = QTableWidget()
         self.car_table.setColumnCount(11)
-        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Năm SX", "Màu sắc", "Loại xe", "Bảo hành", "Giá", "Dung tích", "Trạng thái", "", "", ""])
+        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Năm SX", "Màu sắc", "Dòng xe", "Bảo hành", "Giá", "Dung tích", "Trạng thái", "", "", ""])
         self.car_table.verticalHeader().setVisible(False)
         self.car_table.horizontalHeader().setStretchLastSection(True)
         self.car_table.setAlternatingRowColors(True)
@@ -101,21 +111,23 @@ class CarListWidget(QWidget):
                 pending_count += 1
             self.car_table.setItem(row_position, 7, status_item)
 
+
+
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
-            info_button.setIcon(QIcon("../img/info.svg"))
+            info_button.setIcon(QIcon(info_icon_path))
             info_button.setStyleSheet("background-color: transparent;")
             info_button.clicked.connect(lambda _, car_id=car.id: self.show_car_info(car_id))
             self.car_table.setCellWidget(row_position, 8, info_button)
 
             edit_button = QPushButton()
-            edit_button.setIcon(QIcon("../img/edit.svg"))
+            edit_button.setIcon(QIcon(edit_icon_path))
             edit_button.setStyleSheet("background-color: transparent;")
             edit_button.clicked.connect(lambda _, car_id=car.id: self.edit_car(car_id))
             self.car_table.setCellWidget(row_position, 9, edit_button)
 
             delete_button = QPushButton()
-            delete_button.setIcon(QIcon("../img/delete.svg"))
+            delete_button.setIcon(QIcon(delete_icon_path))
             delete_button.setStyleSheet("background-color: transparent;")
             delete_button.clicked.connect(lambda _, car_id=car.id: self.delete_car(car_id))
             self.car_table.setCellWidget(row_position, 10, delete_button)

@@ -25,7 +25,7 @@ class CarEditDialog(QDialog):
         layout.addRow("Tên xe:", self.name_edit)
         layout.addRow("Năm sản xuất:", self.produced_year_edit)
         layout.addRow("Màu sắc:", self.color_edit)
-        layout.addRow("Loại xe:", self.car_type_edit)
+        layout.addRow("Dòng xe:", self.car_type_edit)
         layout.addRow("Bảo hành:", self.warranty_year_edit)
         layout.addRow("Giá:", self.price_edit)
         layout.addRow("Trạng thái:", self.status_edit)

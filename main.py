@@ -1,92 +1,93 @@
 # main.py
 import sys
+
+from PyQt6.QtCore import QSize
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QIcon
 from Car.car_list import CarListWidget
-from agency_list import AgencyList
-from customer_list import CustomerList
+from OverviewWidget import OverviewWidget
+from Dealer.dealer_list import DealerListWidget
+from Customer.customer_list import CustomerListWidget
 from database import get_role_by_id
-from employee_list import EmployeeList
-from order_list import OrderList
-from partner_list import PartnerList
+from Human_resources.Human_resources_list import HumanResourcesListWidget
+from Order.order_list import OrderListWidget
+from Partner.partner_list import PartnerListWidget
+from Login import LoginWindow
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Car Showroom Management')
+        self.setWindowTitle('Showroom Management')
+        self.resize(1500, 800)
 
         # Sidebar
-        self.sidebar = QWidget()
-        self.sidebar_layout = QVBoxLayout()
-
-        self.car_list_button = QPushButton('Danh sách xe')
-        # self.car_list_button.clicked.connect(self.show_car_list)
-        self.sidebar_layout.addWidget(self.car_list_button)
-
-        self.order_list_button = QPushButton('Danh sách đơn hàng')
-        self.order_list_button.clicked.connect(self.show_order_list)
-        self.sidebar_layout.addWidget(self.order_list_button)
-
-        self.partner_list_button = QPushButton('Hãng xe đối tác')
-        self.partner_list_button.clicked.connect(self.show_partner_list)
-        self.sidebar_layout.addWidget(self.partner_list_button)
-
-        self.customer_list_button = QPushButton('Danh sách khách hàng')
-        self.customer_list_button.clicked.connect(self.show_customer_list)
-        self.sidebar_layout.addWidget(self.customer_list_button)
-
-        self.employee_list_button = QPushButton('Danh sách nhân viên')
-        self.employee_list_button.clicked.connect(self.show_employee_list)
-        self.sidebar_layout.addWidget(self.employee_list_button)
-
-        self.agency_list_button = QPushButton('Danh sách đại lý')
-        self.agency_list_button.clicked.connect(self.show_agency_list)
-        self.sidebar_layout.addWidget(self.agency_list_button)
-
-        self.sidebar.setLayout(self.sidebar_layout)
+        self.sidebar = self.create_sidebar()
 
         # Main Layout
         self.main_layout = QVBoxLayout()
         self.main_widget = QWidget()
         self.main_widget.setLayout(self.main_layout)
 
-        self.setCentralWidget(self.main_widget)
+        # Main Container
+        self.container = QHBoxLayout()
+        self.container.addWidget(self.sidebar)
+        self.container.addWidget(self.main_widget)
 
+        main_container_widget = QWidget()
+        main_container_widget.setLayout(self.container)
+
+        self.setCentralWidget(main_container_widget)
+        self.current_button = None
         # Initial view
-        self.show_car_list()
+
+        self.show_over_view()
+        self.centerOnScreen()
+
+    def centerOnScreen(self):
+        resolution = self.screen().availableGeometry()
+        self.move(int((resolution.width() / 2) - (self.frameSize().width() / 2)),
+                  int((resolution.height() / 2) - (self.frameSize().height() / 2)))
 
     def create_sidebar(self):
         self.setStyleSheet("""
         QPushButton { 
             padding: 10px; background-color: #444444; color: #FFFFFF; border: none; text-align: left;
-            border-radius: 10px; /* Thêm dòng này */
+            border-radius: 10px;
         }
          """)
         sidebar = QWidget()
-        sidebar.setFixedWidth(300)
+        sidebar.setFixedWidth(280)
         self.sidebar_layout = QVBoxLayout(sidebar)
 
-        self.title = QLabel("<span style='color: #2DB4AE;'>Showroom</span><span style='color: #FBCE49;'> VinFest</span>")
+        self.title = QLabel("<span style='color: #2DB4AE;'>Showroom</span><span style='color: #FBCE49;'> VinFost</span>")
         self.title.setFont(QFont('MulishRoman', 30, QFont.Weight.Bold))
-        self.title.setStyleSheet("font-size: 30px;  ")
+        self.title.setStyleSheet("font-size: 30px;")
         self.sidebar_layout.addWidget(self.title)
-        self.user_label = QLabel("Có vẻ chưa đăng nhập :)))")
-        self.user_label.setFont(QFont('MulishRoman', 15))
-        self.user_label.setStyleSheet("color: #FFFFFF; background-color: transparent; padding: 10px;  font-size:18px; font-weight: bold;")
+
+        self.user_label = QLabel()
+        self.user_label.setFont(QFont('Arial', 16))
+        self.user_label.setStyleSheet("color: #FFFFFF; background-color: transparent; padding: 10px; font-size: 18px; font-weight: bold;")
         self.sidebar_layout.addWidget(self.user_label)
 
         sidebar_buttons = [
-            "Tổng quan", "Danh sách xe", "Danh sách đơn hàng",
-            "Hãng xe đối tác", "Danh sách khách hàng", "Danh sách nhân viên",
-            "Danh sách đại lý"
+            ("Tổng quan", self.show_over_view, "img/img_sidebar_buttons/overview.svg"),
+            ("Danh sách xe", self.show_car_list, "img/img_sidebar_buttons/car_list.svg"),
+            ("Danh sách đơn hàng", self.show_order_list, "img/img_sidebar_buttons/order_list.svg"),
+            ("Hãng xe đối tác", self.show_partner_list, "img/img_sidebar_buttons/partner_list.svg"),
+            ("Danh sách khách hàng", self.show_customer_list, "img/img_sidebar_buttons/show_customer_list.svg"),
+            ("Danh sách nhân viên", self.human_resources, "img/img_sidebar_buttons/human_resource_list.svg"),
+            ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")  # Đổi tên hàm và icon
         ]
         self.sidebar_layout.addStretch()
 
-        for button_text in sidebar_buttons:
+        for button_text, handler, icon_path in sidebar_buttons:
             button = QPushButton(button_text)
+            button.setIcon(QIcon(icon_path))
+            button.setIconSize(QSize(30, 30))
             button.setFont(QFont('MulishRoman', 12, QFont.Weight.Bold))
-            button.setStyleSheet("background-color: transparent;font-size:18px; ")
+            button.setStyleSheet("background-color: transparent;font-size:18px;")
+            button.clicked.connect(lambda checked, btn=button, hdlr=handler: self.on_sidebar_button_clicked(btn, hdlr))
             self.sidebar_layout.addWidget(button)
 
         self.sidebar_layout.addStretch()
@@ -94,6 +95,9 @@ class MainWindow(QMainWindow):
         self.logout_button = QPushButton("Đăng xuất")
         self.logout_button.setFont(QFont('MulishRoman', 12, QFont.Weight.Bold))
         self.logout_button.setStyleSheet("background-color: transparent; font-size:18px;")
+        self.logout_button.setIconSize(QSize(30, 30))
+
+        self.logout_button.setIcon(QIcon("img/img_sidebar_buttons/logout.svg"))
         self.logout_button.clicked.connect(self.logout)
         self.sidebar_layout.addWidget(self.logout_button)
 
@@ -102,13 +106,18 @@ class MainWindow(QMainWindow):
 
         return sidebar
 
+    def on_sidebar_button_clicked(self, button, handler):
+        if self.current_button:
+            self.current_button.setStyleSheet("background-color: transparent;font-size:18px; spacing: 10px;")
+
+        self.current_button = button
+        button.setStyleSheet("background-color: transparent;font-size:18px; spacing: 10px; border-left: 3px solid #FBCE49; border-radius: none;")
+        handler()
+
     def show_main_window(self, name, user_id, role_id):
         role = get_role_by_id(role_id)
         self.user_label.setText(f"{name}\nChức danh: {role}\nID: {user_id}")
         self.user_role = role_id
-        # Kiểm tra nếu CarListWidget có phương thức set_permissions
-        if hasattr(self.content, 'set_permissions'):
-            self.content.set_permissions(role_id)  # Pass the role to the content widget
         self.show()
 
     def clear_main_layout(self):
@@ -117,37 +126,43 @@ class MainWindow(QMainWindow):
             if widget is not None:
                 widget.deleteLater()
 
+    def show_over_view(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(OverviewWidget())
 
+    def show_car_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(CarListWidget())
 
     def show_order_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(OrderList())
+        self.main_layout.addWidget(OrderListWidget())
 
     def show_partner_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(PartnerList())
+        self.main_layout.addWidget(PartnerListWidget())
 
     def show_customer_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(CustomerList())
+        self.main_layout.addWidget(CustomerListWidget())
 
-    def show_employee_list(self):
+    def human_resources(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(EmployeeList())
+        self.main_layout.addWidget(HumanResourcesListWidget())
 
-    def show_agency_list(self):
+    def show_dealer_list(self):  # Đổi tên hàm từ show_agency_list thành show_dealer_list
         self.clear_main_layout()
-        self.main_layout.addWidget(AgencyList())
-        
+        self.main_layout.addWidget(DealerListWidget())  # Đổi từ AgencyList thành DealerList
+
     def logout(self):
         print("Logout clicked")
         self.hide()
         self.login_window = LoginWindow(self)  # Re-create the LoginWindow
         self.login_window.show()
 
+
 if __name__ == '__main__':
     print("Starting application")
-    from Login import LoginWindow
     app = QApplication(sys.argv)
     with open("style.qss", "r") as f:
         stylesheet = f.read()

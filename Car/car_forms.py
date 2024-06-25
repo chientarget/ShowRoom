@@ -30,14 +30,29 @@ class CarEditDialog(QDialog):
         self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán", "Đặt cọc"])
         self.trang_thai_edit.setCurrentText(car.status)
 
+        color ="background-color: #F2F2F2; padding: 5px 10px 5px 10px;  border-radius: 15px;"
+        self.ten_xe_edit.setStyleSheet(color)
+        self.nam_san_xuat_edit.setStyleSheet(color)
+        self.mau_sac_edit.setStyleSheet(color)
+        self.loai_xe_edit.setStyleSheet(color)
+        self.dung_tich_nhien_lieu_edit.setStyleSheet(color)
+        self.tieu_thu_nhien_lieu_edit.setStyleSheet(color)
+        self.so_ghe_edit.setStyleSheet(color)
+        self.dong_co_edit.setStyleSheet(color)
+        self.gia_edit.setStyleSheet(color)
+        self.vin_edit.setStyleSheet(color)
+        self.nam_bao_hanh_edit.setStyleSheet(color)
+
+
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
         layout.addWidget(self.ten_xe_edit, 0, 1)
+
         layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
         layout.addWidget(self.nam_san_xuat_edit, 0, 3)
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(self.mau_sac_edit, 1, 1)
-        layout.addWidget(QLabel("Loại xe:"), 1, 2)
+        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
         layout.addWidget(self.loai_xe_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
@@ -63,6 +78,11 @@ class CarEditDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px;  background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 6, 0, 1, 4)
 
     def accept(self):
@@ -104,7 +124,7 @@ class CarInfoDialog(QDialog):
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(QLabel(car_details[2]), 1, 1)
-        layout.addWidget(QLabel("Loại xe:"), 1, 2)
+        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
         layout.addWidget(QLabel(car_details[3]), 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
@@ -161,7 +181,7 @@ class CarAddDialog(QDialog):
 
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(self.mau_sac_edit, 1, 1)
-        layout.addWidget(QLabel("Loại xe:"), 1, 2)
+        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
         layout.addWidget(self.loai_xe_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)

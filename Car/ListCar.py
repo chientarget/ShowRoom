@@ -114,7 +114,7 @@ class MainWindow(QMainWindow):
 
         self.car_table = QTableWidget()
         self.car_table.setColumnCount(10)
-        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Loại xe", "Năm sản xuất", "Màu sắc", "Bảo hành", "Giá", "Trạng thái", "Thông tin", "Sửa", "Xóa"])
+        self.car_table.setHorizontalHeaderLabels(["Tên xe", "Dòng xe", "Năm sản xuất", "Màu sắc", "Bảo hành", "Giá", "Trạng thái", "Thông tin", "Sửa", "Xóa"])
         self.car_table.horizontalHeader().setStretchLastSection(True)
         self.car_table.setAlternatingRowColors(True)
         self.car_table.setStyleSheet("QHeaderView::section { background-color: #2DB4AE; color: white; }")
@@ -154,21 +154,21 @@ class MainWindow(QMainWindow):
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
-            info_button.setIcon(QIcon("../img/info.svg"))
+            info_button.setIcon(QIcon("../img/img_crud/info.svg"))
             info_button.setFixedSize(30, 30)
             info_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             info_button.clicked.connect(lambda _, name=car[0]: self.show_car_info(name))
             self.car_table.setCellWidget(row_position, 7, info_button)
 
             edit_button = QPushButton()
-            edit_button.setIcon(QIcon("../img/edit.svg"))
+            edit_button.setIcon(QIcon("../img/img_crud/edit.svg"))
             edit_button.setFixedSize(30, 30)
             edit_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             edit_button.clicked.connect(lambda _, name=car[0]: self.edit_car(name))
             self.car_table.setCellWidget(row_position, 8, edit_button)
 
             delete_button = QPushButton()
-            delete_button.setIcon(QIcon("../img/delete.svg"))
+            delete_button.setIcon(QIcon("../img/img_crud/delete.svg"))
             delete_button.setFixedSize(30, 30)
             delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             delete_button.clicked.connect(lambda _, name=car[0]: self.delete_car(name))
@@ -208,14 +208,14 @@ class MainWindow(QMainWindow):
         QMessageBox.information(self, "Sửa thông tin xe", f"Sửa thông tin của xe '{car_name}'")
 
 
-if __name__ == '__main__':
-    init_db()
-    app = QApplication(sys.argv)
-    app.setStyleSheet("""
-        QPushButton { 
-            padding: 10px;
-        }
-    """)
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+# if __name__ == '__main__':
+#     init_db()
+#     app = QApplication(sys.argv)
+#     app.setStyleSheet("""
+#         QPushButton {
+#             padding: 10px;
+#         }
+#     """)
+#     window = MainWindow()
+#     window.show()
+#     sys.exit(app.exec())

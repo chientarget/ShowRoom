@@ -1,19 +1,17 @@
 # main.py
 import sys
-
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QPushButton
 from PyQt6.QtGui import QFont, QIcon
-from Car.car_list import CarListWidget
+from Car.CarGUI import CarGUI
+from Customer.CustomerGUI import CustomerGUI
+from Dealer.DealerGUI import DealerGUI
+from Human_resources.HumanResourcesGUI import HumanResourcesGUI
+from Order.OrderGUI import OrderGUI
+from Partner.PartnerGUI import PartnerGUI
 from OverviewWidget import OverviewWidget
-from Dealer.dealer_list import DealerListWidget
-from Customer.customer_list import CustomerListWidget
-from database import get_role_by_id
-from Human_resources.Human_resources_list import HumanResourcesListWidget
-from Order.order_list import OrderListWidget
-from Partner.partner_list import PartnerListWidget
 from Login import LoginWindow
-
+from database import get_role_by_id
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -42,9 +40,9 @@ class MainWindow(QMainWindow):
         # Initial view
 
         self.show_over_view()
-        self.centerOnScreen()
+        self.center_on_screen()
 
-    def centerOnScreen(self):
+    def center_on_screen(self):
         resolution = self.screen().availableGeometry()
         self.move(int((resolution.width() / 2) - (self.frameSize().width() / 2)),
                   int((resolution.height() / 2) - (self.frameSize().height() / 2)))
@@ -77,7 +75,7 @@ class MainWindow(QMainWindow):
             ("Hãng xe đối tác", self.show_partner_list, "img/img_sidebar_buttons/partner_list.svg"),
             ("Danh sách khách hàng", self.show_customer_list, "img/img_sidebar_buttons/show_customer_list.svg"),
             ("Danh sách nhân viên", self.human_resources, "img/img_sidebar_buttons/human_resource_list.svg"),
-            ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")  # Đổi tên hàm và icon
+            ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")
         ]
         self.sidebar_layout.addStretch()
 
@@ -96,7 +94,6 @@ class MainWindow(QMainWindow):
         self.logout_button.setFont(QFont('MulishRoman', 12, QFont.Weight.Bold))
         self.logout_button.setStyleSheet("background-color: transparent; font-size:18px;")
         self.logout_button.setIconSize(QSize(30, 30))
-
         self.logout_button.setIcon(QIcon("img/img_sidebar_buttons/logout.svg"))
         self.logout_button.clicked.connect(self.logout)
         self.sidebar_layout.addWidget(self.logout_button)
@@ -132,32 +129,32 @@ class MainWindow(QMainWindow):
 
     def show_car_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(CarListWidget())
+        self.main_layout.addWidget(CarGUI())
 
     def show_order_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(OrderListWidget())
+        self.main_layout.addWidget(OrderGUI())
 
     def show_partner_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(PartnerListWidget())
+        self.main_layout.addWidget(PartnerGUI())
 
     def show_customer_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(CustomerListWidget())
+        self.main_layout.addWidget(CustomerGUI())
 
     def human_resources(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(HumanResourcesListWidget())
+        self.main_layout.addWidget(HumanResourcesGUI())
 
-    def show_dealer_list(self):  # Đổi tên hàm từ show_agency_list thành show_dealer_list
+    def show_dealer_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(DealerListWidget())  # Đổi từ AgencyList thành DealerList
+        self.main_layout.addWidget(DealerGUI())
 
     def logout(self):
         print("Logout clicked")
         self.hide()
-        self.login_window = LoginWindow(self)  # Re-create the LoginWindow
+        self.login_window = LoginWindow(self)
         self.login_window.show()
 
 
@@ -169,8 +166,7 @@ if __name__ == '__main__':
         app.setStyleSheet(stylesheet)
     main_window = MainWindow()
 
-    login_window = LoginWindow(main_window)  # Create the LoginWindow
+    login_window = LoginWindow(main_window)
     login_window.show()
 
-    # main_window.show_main_window("Admin", 1, 1)
     sys.exit(app.exec())

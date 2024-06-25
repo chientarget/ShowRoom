@@ -1,17 +1,19 @@
 # main.py
 import sys
+
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QPushButton
+from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QFont, QIcon
 from Car.CarGUI import CarGUI
-from Customer.CustomerGUI import CustomerGUI
-from Dealer.DealerGUI import DealerGUI
-from Human_resources.HumanResourcesGUI import HumanResourcesGUI
-from Order.OrderGUI import OrderGUI
-from Partner.PartnerGUI import PartnerGUI
 from OverviewWidget import OverviewWidget
-from Login import LoginWindow
+from Dealer.DealerGUI import DealerGUI
+from Customer.CustomerGUI import CustomerGUI
 from database import get_role_by_id
+from Human_resources.HumanResourcesGUI import HumanResourcesListWidget
+from Order.OrderGUI import OrderListWidget
+from Partner.PartnerGUI import PartnerListWidget
+from Login import LoginWindow
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -40,9 +42,9 @@ class MainWindow(QMainWindow):
         # Initial view
 
         self.show_over_view()
-        self.center_on_screen()
+        self.centerOnScreen()
 
-    def center_on_screen(self):
+    def centerOnScreen(self):
         resolution = self.screen().availableGeometry()
         self.move(int((resolution.width() / 2) - (self.frameSize().width() / 2)),
                   int((resolution.height() / 2) - (self.frameSize().height() / 2)))
@@ -75,7 +77,7 @@ class MainWindow(QMainWindow):
             ("Hãng xe đối tác", self.show_partner_list, "img/img_sidebar_buttons/partner_list.svg"),
             ("Danh sách khách hàng", self.show_customer_list, "img/img_sidebar_buttons/show_customer_list.svg"),
             ("Danh sách nhân viên", self.human_resources, "img/img_sidebar_buttons/human_resource_list.svg"),
-            ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")
+            ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")  # Đổi tên hàm và icon
         ]
         self.sidebar_layout.addStretch()
 
@@ -94,6 +96,7 @@ class MainWindow(QMainWindow):
         self.logout_button.setFont(QFont('MulishRoman', 12, QFont.Weight.Bold))
         self.logout_button.setStyleSheet("background-color: transparent; font-size:18px;")
         self.logout_button.setIconSize(QSize(30, 30))
+
         self.logout_button.setIcon(QIcon("img/img_sidebar_buttons/logout.svg"))
         self.logout_button.clicked.connect(self.logout)
         self.sidebar_layout.addWidget(self.logout_button)
@@ -133,11 +136,11 @@ class MainWindow(QMainWindow):
 
     def show_order_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(OrderGUI())
+        self.main_layout.addWidget(OrderListWidget())
 
     def show_partner_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(PartnerGUI())
+        self.main_layout.addWidget(PartnerListWidget())
 
     def show_customer_list(self):
         self.clear_main_layout()
@@ -145,7 +148,7 @@ class MainWindow(QMainWindow):
 
     def human_resources(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(HumanResourcesGUI())
+        self.main_layout.addWidget(HumanResourcesListWidget())
 
     def show_dealer_list(self):
         self.clear_main_layout()
@@ -169,4 +172,5 @@ if __name__ == '__main__':
     login_window = LoginWindow(main_window)
     login_window.show()
 
+    # main_window.show_main_window("Admin", 1, 1)
     sys.exit(app.exec())

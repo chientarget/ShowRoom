@@ -1,56 +1,7 @@
 import sqlite3
 
-def get_cars():
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT id, name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, warranty_year, status
-        FROM Car
-    ''')
-    cars = cursor.fetchall()
-    conn.close()
-    return cars
-
-
-def get_car_details(car_id):
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status
-        FROM Car
-        WHERE id = ?
-    ''', (car_id,))
-    car = cursor.fetchone()
-    conn.close()
-    return car
-
-def update_car(car_id, name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status):
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE Car
-        SET name = ?, produced_year = ?, color = ?, car_type = ?, fuel_capacity = ?, material_consumption = ?, seat_num = ?, engine = ?, price = ?, vin = ?, warranty_year = ?, status = ?
-        WHERE id = ?
-    ''', (name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status, car_id))
-    conn.commit()
-    conn.close()
-
-def add_car(name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status):
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO Car (name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status))
-    conn.commit()
-    conn.close()
-
-def delete_car(car_id):
-    conn = sqlite3.connect('showroom.db')
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM Car WHERE id = ?', (car_id,))
-    conn.commit()
-    conn.close()
+def get_database_connection():
+    return sqlite3.connect('showroom.db')
 
 def add_user(username, password, name, phone, email, address, gender, role_id):
     conn = get_database_connection()
@@ -70,40 +21,6 @@ def get_user(username):
     conn.close()
     return user
 
-def update_user(user_id, username, password, name, phone, email, address, gender, role_id):
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    cursor.execute('''
-        UPDATE Human_resources
-        SET username = ?, password = ?, name = ?, phone = ?, email = ?, address = ?, gender = ?, role_id = ?
-        WHERE id = ?
-    ''', (username, password, name, phone, email, address, gender, role_id, user_id))
-    conn.commit()
-    conn.close()
-
-def delete_user(user_id):
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    cursor.execute('DELETE FROM Human_resources WHERE id = ?', (user_id,))
-    conn.commit()
-    conn.close()
-
-def get_users():
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, username, name, phone, email, address, gender, role_id FROM Human_resources')
-    users = cursor.fetchall()
-    conn.close()
-    return users
-
-def get_roles():
-    conn = get_database_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, name FROM Role')
-    roles = cursor.fetchall()
-    conn.close()
-    return roles
-
 def get_role_by_id(role_id):
     conn = sqlite3.connect('showroom.db')
     cursor = conn.cursor()
@@ -111,10 +28,6 @@ def get_role_by_id(role_id):
     role = cursor.fetchone()
     conn.close()
     return role[0] if role else "Unknown"
-
-
-def get_database_connection():
-    return sqlite3.connect('showroom.db')
 
 def get_monthly_revenue():
     conn = get_database_connection()
@@ -186,6 +99,70 @@ def get_top_human_resource_monthly():
     return top_human_resource
 
 
+"""def get_cars():
+    conn = sqlite3.connect('showroom.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT id, name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, warranty_year, status
+        FROM Car
+    ''')
+    cars = cursor.fetchall()
+    conn.close()
+    return cars
+
+def update_car(car_id, name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status):
+    conn = sqlite3.connect('showroom.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE Car
+        SET name = ?, produced_year = ?, color = ?, car_type = ?, fuel_capacity = ?, material_consumption = ?, seat_num = ?, engine = ?, price = ?, vin = ?, warranty_year = ?, status = ?
+        WHERE id = ?
+    ''', (name, produced_year, color, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, warranty_year, status, car_id))
+    conn.commit()
+    conn.close()
+
+def delete_car(car_id):
+    conn = sqlite3.connect('showroom.db')
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM Car WHERE id = ?', (car_id,))
+    conn.commit()
+    conn.close()"""
+
+"""def update_user(user_id, username, password, name, phone, email, address, gender, role_id):
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    cursor.execute('''
+        UPDATE Human_resources
+        SET username = ?, password = ?, name = ?, phone = ?, email = ?, address = ?, gender = ?, role_id = ?
+        WHERE id = ?
+    ''', (username, password, name, phone, email, address, gender, role_id, user_id))
+    conn.commit()
+    conn.close()
+
+def delete_user(user_id):
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    cursor.execute('DELETE FROM Human_resources WHERE id = ?', (user_id,))
+    conn.commit()
+    conn.close()
+
+def get_users():
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, username, name, phone, email, address, gender, role_id FROM Human_resources')
+    users = cursor.fetchall()
+    conn.close()
+    return users
+
+def get_roles():
+    conn = get_database_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, name FROM Role')
+    roles = cursor.fetchall()
+    conn.close()
+    return roles
+ 
+
 def get_order_columns():
     conn = sqlite3.connect('showroom.db')
     cursor = conn.cursor()
@@ -235,5 +212,5 @@ def delete_order(order_id):
     cursor = conn.cursor()
     cursor.execute('DELETE FROM "Order" WHERE id = ?', (order_id,))
     conn.commit()
-    conn.close()
+    conn.close()"""
 

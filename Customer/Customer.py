@@ -1,57 +1,78 @@
-# Customer.py
 import sqlite3
 
 class Customer:
+    def __init__(self, id, name, address, phone, email):
+        self._id = id
+        self._name = name
+        self._address = address
+        self._phone = phone
+        self._email = email
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def address(self):
+        return self._address
+
+    @property
+    def phone(self):
+        return self._phone
+
+    @property
+    def email(self):
+        return self._email
+
     @staticmethod
     def get_all_customers():
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT id, name, phone, email, address, gender, date_of_birth, customer_type
-            FROM Customer
-        ''')
-        customers = cursor.fetchall()
+        cursor.execute('''SELECT id, name, address, phone, email FROM Customer''')
+        rows = cursor.fetchall()
         conn.close()
-        return customers
+        return [Customer(*row) for row in rows]
 
     @staticmethod
-    def get_customer_details(customer_id):
+    def get_customer_by_id(customer_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT name, phone, email, address, gender, date_of_birth, customer_type
-            FROM Customer
-            WHERE id = ?
-        ''', (customer_id,))
-        customer = cursor.fetchone()
+        cursor.execute('''SELECT id, name, address, phone, email FROM Customer WHERE id = ?''', (customer_id,))
+        row = cursor.fetchone()
         conn.close()
-        return customer
+        if row:
+            return Customer(*row)
+        else:
+            return None
 
-    @staticmethod
-    def update_customer(customer_id, name, phone, email, address, gender, date_of_birth, customer_type):
+    def update(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('''
             UPDATE Customer
-            SET name = ?, phone = ?, email = ?, address = ?, gender = ?, date_of_birth = ?, customer_type = ?
+            SET name = ?, address = ?, phone = ?, email = ?
             WHERE id = ?
-        ''', (name, phone, email, address, gender, date_of_birth, customer_type, customer_id))
+        ''', (self.name, self.address, self.phone, self.email, self.id))
         conn.commit()
         conn.close()
 
-    @staticmethod
-    def add_customer(name, phone, email, address, gender, date_of_birth, customer_type):
+    def save(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO Customer (name, phone, email, address, gender, date_of_birth, customer_type)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (name, phone, email, address, gender, date_of_birth, customer_type))
+            INSERT INTO Customer (name, address, phone, email)
+            VALUES (?, ?, ?, ?)
+        ''', (self.name, self.address, self.phone, self.email))
         conn.commit()
+        self._id = cursor.lastrowid
         conn.close()
 
     @staticmethod
-    def delete_customer(customer_id):
+    def delete(customer_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('DELETE FROM Customer WHERE id = ?', (customer_id,))

@@ -2,56 +2,83 @@
 import sqlite3
 
 class Partner:
+    def __init__(self, id, logo, name, country, founded_year, description):
+        self._id = id
+        self._logo = logo
+        self._name = name
+        self._country = country
+        self._founded_year = founded_year
+        self._description = description
+
+    @property
+    def id(self):
+        return self._id
+
+    @property
+    def logo(self):
+        return self._logo
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def country(self):
+        return self._country
+
+    @property
+    def founded_year(self):
+        return self._founded_year
+
+    @property
+    def description(self):
+        return self._description
+
     @staticmethod
     def get_all_partners():
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT id, name, address, phone, email
-            FROM Partner
-        ''')
-        partners = cursor.fetchall()
+        cursor.execute('''SELECT id, logo, name, country, founded_year, description FROM Partner''')
+        rows = cursor.fetchall()
         conn.close()
-        return partners
+        return [Partner(*row) for row in rows]
 
     @staticmethod
-    def get_partner_details(partner_id):
+    def get_partner_by_id(partner_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT name, address, phone, email
-            FROM Partner
-            WHERE id = ?
-        ''', (partner_id,))
-        partner = cursor.fetchone()
+        cursor.execute('''SELECT id, logo, name, country, founded_year, description FROM Partner WHERE id = ?''', (partner_id,))
+        row = cursor.fetchone()
         conn.close()
-        return partner
+        if row:
+            return Partner(*row)
+        else:
+            return None
 
-    @staticmethod
-    def update_partner(partner_id, name, address, phone, email):
+    def update(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('''
             UPDATE Partner
-            SET name = ?, address = ?, phone = ?, email = ?
+            SET logo = ?, name = ?, country = ?, founded_year = ?, description = ?
             WHERE id = ?
-        ''', (name, address, phone, email, partner_id))
+        ''', (self.logo, self.name, self.country, self.founded_year, self.description, self.id))
         conn.commit()
         conn.close()
 
-    @staticmethod
-    def add_partner(name, address, phone, email):
+    def save(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO Partner (name, address, phone, email)
+            INSERT INTO Partner (logo, name, country, founded_year, description)
             VALUES (?, ?, ?, ?, ?)
-        ''', (name, address, phone, email))
+        ''', (self.logo, self.name, self.country, self.founded_year, self.description))
         conn.commit()
+        self._id = cursor.lastrowid
         conn.close()
 
     @staticmethod
-    def delete_partner(partner_id):
+    def delete(partner_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
         cursor.execute('DELETE FROM Partner WHERE id = ?', (partner_id,))

@@ -1,10 +1,10 @@
-# Login.py
 import sqlite3
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QLineEdit, QPushButton, QStackedWidget, QMessageBox
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
 from database import get_user, add_user
+
 
 class LoginWindow(QMainWindow):
     def __init__(self, main_window):
@@ -75,13 +75,29 @@ class LoginWindow(QMainWindow):
 
         register_button = QPushButton("Đăng ký")
         register_button.setFont(QFont('Arial', 14))
-        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
+        register_button.setStyleSheet("""
+                    QPushButton {
+                        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                                          stop: 0 #FDBE02, stop: 1 #2db4ae);
+                        color: black;
+                        border-radius: 18px;
+                        padding: 10px;
+                    }
+                """)
         register_button.clicked.connect(self.show_register)
         button_layout.addWidget(register_button)
 
         login_button = QPushButton("Đăng nhập")
         login_button.setFont(QFont('Arial', 14))
-        login_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
+        login_button.setStyleSheet("""
+            QPushButton {
+                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                                  stop: 0 #FDBE02, stop: 1 #2db4ae);
+                color: black;
+                border-radius: 18px;
+                padding: 10px;
+            }
+        """)
         login_button.clicked.connect(self.login)
         button_layout.addWidget(login_button)
 
@@ -144,13 +160,29 @@ class LoginWindow(QMainWindow):
 
         back_button = QPushButton("Quay lại")
         back_button.setFont(QFont('Arial', 14))
-        back_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
+        back_button.setStyleSheet("""
+                           QPushButton {
+                               background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                                                 stop: 0 #FDBE02, stop: 1 #2db4ae);
+                               color: black;
+                               border-radius: 18px;
+                               padding: 10px;
+                           }
+                       """)
         back_button.clicked.connect(self.show_login)
         button_layout.addWidget(back_button)
 
         register_button = QPushButton("Đăng ký")
         register_button.setFont(QFont('Arial', 14))
-        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
+        register_button.setStyleSheet("""
+                    QPushButton {
+                        background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1,
+                                                          stop: 0 #FDBE02, stop: 1 #2db4ae);
+                        color: black;
+                        border-radius: 18px;
+                        padding: 10px;
+                    }
+                """)
         register_button.clicked.connect(self.register)
         button_layout.addWidget(register_button)
 
@@ -201,7 +233,6 @@ class LoginWindow(QMainWindow):
             QMessageBox.warning(self, "Thất bại", "Mật khẩu và xác nhận mật khẩu không khớp.")
             return
 
-
         name = "Thành viên Showroom"
         phone = ""
         email = ""
@@ -221,6 +252,7 @@ class LoginWindow(QMainWindow):
 
 if __name__ == '__main__':
     from main import MainWindow
+
     print("Starting login application")
     app = QApplication(sys.argv)
     app.setStyleSheet("""

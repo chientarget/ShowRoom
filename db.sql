@@ -110,6 +110,7 @@ CREATE TABLE "Order" (
     customer_id INTEGER,
     dealer_id INTEGER,
     total_price INTEGER,
+    creation_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     car_id INTEGER,
     human_resource_id INTEGER,
     FOREIGN KEY (car_id) REFERENCES Car(id),
@@ -251,12 +252,12 @@ INSERT INTO Dealer_image (image_data, dealer_id) VALUES
 (X'89504E470D0A1A0A', 5);
 
 -- Dữ liệu mẫu cho bảng "Order"
-INSERT INTO "Order" (customer_id, dealer_id, total_price, car_id, human_resource_id) VALUES
-(1, 1, 675000000, 1, 1),
-(2, 2, 850000000, 2, 2),
-(3, 3, 529000000, 5, 3),
-(4, 4, 998000000, 6, 4),
-(5, 5, 30000000000, 8, 5);
+INSERT INTO "Order" (customer_id, dealer_id, total_price,creation_time , car_id, human_resource_id) VALUES
+(1, 1, 675000000, CURRENT_TIMESTAMP, 1, 1),
+(2, 2, 850000000, CURRENT_TIMESTAMP, 2, 2),
+(3, 3, 529000000, CURRENT_TIMESTAMP, 5, 3),
+(4, 4, 998000000, CURRENT_TIMESTAMP, 6, 4),
+(5, 5, 30000000000, CURRENT_TIMESTAMP, 8, 5);
 
 -- Dữ liệu mẫu cho bảng Partner
 INSERT INTO Partner (logo, name, country, founded_year, description) VALUES

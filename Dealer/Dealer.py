@@ -1,52 +1,45 @@
-# Dealer.py
 import sqlite3
 
 class Dealer:
+    def __init__(self, id=None, name="", address="", phone="", email=""):
+        self.id = id
+        self.name = name
+        self.address = address
+        self.phone = phone
+        self.email = email
+
     @staticmethod
-    def get_all_dealers():
+    def get_dealers():
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT id, name, address, phone, email
-            FROM Dealer
-        ''')
+        cursor.execute('SELECT id, name, address, phone, email FROM Dealer')
         dealers = cursor.fetchall()
         conn.close()
-        return dealers
+        return [Dealer(*dealer) for dealer in dealers]
 
     @staticmethod
     def get_dealer_details(dealer_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            SELECT name, address, phone, email
-            FROM Dealer
-            WHERE id = ?
-        ''', (dealer_id,))
+        cursor.execute('SELECT id, name, address, phone, email FROM Dealer WHERE id = ?', (dealer_id,))
         dealer = cursor.fetchone()
         conn.close()
-        return dealer
+        return Dealer(*dealer) if dealer else None
 
-    @staticmethod
-    def update_dealer(dealer_id, name, address, phone, email):
+    def add_dealer(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            UPDATE Dealer
-            SET name = ?, address = ?, phone = ?, email = ?
-            WHERE id = ?
-        ''', (name, address, phone, email, dealer_id))
+        cursor.execute('INSERT INTO Dealer (name, address, phone, email) VALUES (?, ?, ?, ?)',
+                       (self.name, self.address, self.phone, self.email))
         conn.commit()
+        self.id = cursor.lastrowid
         conn.close()
 
-    @staticmethod
-    def add_dealer(name, address, phone, email):
+    def update_dealer(self):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO Dealer (name, address, phone, email)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (name, address, phone, email))
+        cursor.execute('UPDATE Dealer SET name = ?, address = ?, phone = ?, email = ? WHERE id = ?',
+                       (self.name, self.address, self.phone, self.email, self.id))
         conn.commit()
         conn.close()
 
@@ -57,3 +50,6 @@ class Dealer:
         cursor.execute('DELETE FROM Dealer WHERE id = ?', (dealer_id,))
         conn.commit()
         conn.close()
+
+    def __str__(self):
+        return f"{self.name} - {self.address}"

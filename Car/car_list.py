@@ -1,9 +1,9 @@
 # car_list.py
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QSizePolicy, QMessageBox, QHBoxLayout
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem, QMessageBox, QHBoxLayout
 from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtCore import Qt
-from car import Car
-from car_forms import CarEditDialog, CarInfoDialog, CarAddDialog
+from Car.car import Car
+from Car.car_forms import CarEditDialog, CarInfoDialog, CarAddDialog
 
 def format_price(price):
     if price >= 1_000_000_000:
@@ -43,6 +43,7 @@ class CarListWidget(QWidget):
         self.car_table = QTableWidget()
         self.car_table.setColumnCount(11)
         self.car_table.setHorizontalHeaderLabels(["Tên xe", "Năm SX", "Màu sắc", "Loại xe", "Bảo hành", "Giá", "Dung tích", "Trạng thái", "", "", ""])
+        self.car_table.verticalHeader().setVisible(False)
         self.car_table.horizontalHeader().setStretchLastSection(True)
         self.car_table.setAlternatingRowColors(True)
         self.car_table.setStyleSheet("""
@@ -102,19 +103,19 @@ class CarListWidget(QWidget):
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
-            info_button.setIcon(QIcon("img/info.svg"))
+            info_button.setIcon(QIcon("../img/info.svg"))
             info_button.setStyleSheet("background-color: transparent;")
             info_button.clicked.connect(lambda _, car_id=car.id: self.show_car_info(car_id))
             self.car_table.setCellWidget(row_position, 8, info_button)
 
             edit_button = QPushButton()
-            edit_button.setIcon(QIcon("img/edit.svg"))
+            edit_button.setIcon(QIcon("../img/edit.svg"))
             edit_button.setStyleSheet("background-color: transparent;")
             edit_button.clicked.connect(lambda _, car_id=car.id: self.edit_car(car_id))
             self.car_table.setCellWidget(row_position, 9, edit_button)
 
             delete_button = QPushButton()
-            delete_button.setIcon(QIcon("img/delete.svg"))
+            delete_button.setIcon(QIcon("../img/delete.svg"))
             delete_button.setStyleSheet("background-color: transparent;")
             delete_button.clicked.connect(lambda _, car_id=car.id: self.delete_car(car_id))
             self.car_table.setCellWidget(row_position, 10, delete_button)

@@ -10,7 +10,7 @@ class LoginWindow(QMainWindow):
     def __init__(self, main_window):
         super().__init__()
         self.main_window = main_window
-        self.setWindowTitle("Showroom Vinfast")
+        self.setWindowTitle("Đăng nhập Showroom Vinfast")
         self.setGeometry(100, 100, 500, 400)
 
         self.main_widget = QWidget()
@@ -31,7 +31,7 @@ class LoginWindow(QMainWindow):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        title = QLabel("<span style='color: #FFFFFF;'>Showroom </span><span style='color: #FDBE02;'>VinFast</span>")
+        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02; font-size:30px;'>VinFast</span>")
         title.setFont(QFont('Arial', 24, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -65,13 +65,13 @@ class LoginWindow(QMainWindow):
 
         register_button = QPushButton("Đăng ký")
         register_button.setFont(QFont('Arial', 14))
-        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 20px; padding: 10px;")
+        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
         register_button.clicked.connect(self.show_register)
         button_layout.addWidget(register_button)
 
         login_button = QPushButton("Đăng nhập")
         login_button.setFont(QFont('Arial', 14))
-        login_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 20px; padding: 10px;")
+        login_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
         login_button.clicked.connect(self.login)
         button_layout.addWidget(login_button)
 
@@ -86,7 +86,7 @@ class LoginWindow(QMainWindow):
         widget = QWidget()
         layout = QVBoxLayout(widget)
 
-        title = QLabel("<span style='color: #FFFFFF;'>Showroom </span><span style='color: #FDBE02;'>VinFast</span>")
+        title = QLabel("<span style='color: #FFFFFF;font-size:30px;'>Showroom </span><span style='color: #FDBE02;font-size:30px;'>VinFast</span>")
         title.setFont(QFont('Arial', 24, QFont.Weight.Bold))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(title)
@@ -131,13 +131,13 @@ class LoginWindow(QMainWindow):
 
         back_button = QPushButton("Quay lại")
         back_button.setFont(QFont('Arial', 14))
-        back_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 20px; padding: 10px;")
+        back_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
         back_button.clicked.connect(self.show_login)
         button_layout.addWidget(back_button)
 
         register_button = QPushButton("Đăng ký")
         register_button.setFont(QFont('Arial', 14))
-        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 20px; padding: 10px;")
+        register_button.setStyleSheet("background-color: #FDBE02; color: black; border-radius: 18px; padding: 10px;")
         register_button.clicked.connect(self.register)
         button_layout.addWidget(register_button)
 
@@ -156,38 +156,45 @@ class LoginWindow(QMainWindow):
 
     def login(self):
         print("Attempting to log in")
-        username = self.username_input.text()
-        password = self.password_input.text()
+        username = self.username_input.text().strip()
+        password = self.password_input.text().strip()
+
+        if not username or not password:
+            QMessageBox.warning(self, "Thất bại", "Vui lòng điền tên đăng nhập và mật khẩu.")
+            return
+
         user = get_user(username)
 
         if user and user[2] == password:  # Assuming password is stored in the third column
             print("Login successful")
-            # QMessageBox.information(self, "Thành công", "Đăng nhập thành công!")
             self.hide()
             self.main_window.show_main_window(user[3], user[0], user[4])
-
         else:
             print("Login failed")
             QMessageBox.warning(self, "Thất bại", "Tên đăng nhập hoặc mật khẩu không đúng.")
 
     def register(self):
         print("Attempting to register")
-        username = self.reg_username_input.text()
-        password = self.reg_password_input.text()
-        confirm_password = self.confirm_password_input.text()
+        username = self.reg_username_input.text().strip()
+        password = self.reg_password_input.text().strip()
+        confirm_password = self.confirm_password_input.text().strip()
+
+        if not username or not password or not confirm_password:
+            QMessageBox.warning(self, "Thất bại", "Vui lòng điền đầy đủ thông tin đăng ký.")
+            return
 
         if password != confirm_password:
             print("Passwords do not match")
             QMessageBox.warning(self, "Thất bại", "Mật khẩu và xác nhận mật khẩu không khớp.")
             return
 
-        # Thêm thông tin đăng ký mặc định (cần chỉnh sửa để lấy từ form đăng ký)
-        name = "Tên mẫu"
-        phone = "0000000000"
-        email = "example@example.com"
-        address = "Địa chỉ mẫu"
+
+        name = "Thành viên Showroom"
+        phone = ""
+        email = ""
+        address = ""
         gender = 1  # 1 for male, 0 for female
-        role_id = 1  # Default role_id
+        role_id = 4  # mặc điịnh nhân viên hành chính
 
         try:
             add_user(username, password, name, phone, email, address, gender, role_id)
@@ -197,6 +204,7 @@ class LoginWindow(QMainWindow):
         except sqlite3.IntegrityError:
             print("Username already exists")
             QMessageBox.warning(self, "Thất bại", "Tên đăng nhập đã tồn tại.")
+
 
 if __name__ == '__main__':
     from main import MainWindow

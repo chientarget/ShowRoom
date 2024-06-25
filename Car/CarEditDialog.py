@@ -1,10 +1,5 @@
 # CarEditDialog.py
-import sys
-import sqlite3
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFont, QIcon
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QPushButton, \
-    QTableWidget, QTableWidgetItem, QMessageBox, QSizePolicy, QDialog, QFormLayout, QLineEdit, QDialogButtonBox
+from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QDialogButtonBox
 from car import Car
 
 class CarEditDialog(QDialog):

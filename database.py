@@ -69,3 +69,11 @@ def get_user(username):
     user = cursor.fetchone()
     conn.close()
     return user
+
+def get_role_by_id(role_id):
+    conn = sqlite3.connect('showroom.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT name FROM Role WHERE id = ?', (role_id,))
+    role = cursor.fetchone()
+    conn.close()
+    return role[0] if role else "Unknown"

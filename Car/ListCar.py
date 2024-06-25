@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout,
 
 # Database setup
 def init_db():
-    conn = sqlite3.connect('showroom.db')
+    conn = sqlite3.connect('../showroom.db')
     cursor = conn.cursor()
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS cars (
@@ -50,7 +50,7 @@ def init_db():
 
 
 def get_cars():
-    conn = sqlite3.connect('showroom.db')
+    conn = sqlite3.connect('../showroom.db')
     cursor = conn.cursor()
     cursor.execute('SELECT name, type, year, color, warranty, price, status FROM cars')
     cars = cursor.fetchall()
@@ -154,21 +154,21 @@ class MainWindow(QMainWindow):
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
-            info_button.setIcon(QIcon("img/info.svg"))
+            info_button.setIcon(QIcon("../img/info.svg"))
             info_button.setFixedSize(30, 30)
             info_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             info_button.clicked.connect(lambda _, name=car[0]: self.show_car_info(name))
             self.car_table.setCellWidget(row_position, 7, info_button)
 
             edit_button = QPushButton()
-            edit_button.setIcon(QIcon("img/edit.svg"))
+            edit_button.setIcon(QIcon("../img/edit.svg"))
             edit_button.setFixedSize(30, 30)
             edit_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             edit_button.clicked.connect(lambda _, name=car[0]: self.edit_car(name))
             self.car_table.setCellWidget(row_position, 8, edit_button)
 
             delete_button = QPushButton()
-            delete_button.setIcon(QIcon("img/delete.svg"))
+            delete_button.setIcon(QIcon("../img/delete.svg"))
             delete_button.setFixedSize(30, 30)
             delete_button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
             delete_button.clicked.connect(lambda _, name=car[0]: self.delete_car(name))
@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
         pass
 
     def delete_car(self, car_name):
-        conn = sqlite3.connect('showroom.db')
+        conn = sqlite3.connect('../showroom.db')
         cursor = conn.cursor()
         cursor.execute('DELETE FROM cars WHERE name = ?', (car_name,))
         conn.commit()

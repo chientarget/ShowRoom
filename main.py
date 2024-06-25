@@ -2,31 +2,65 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
 from PyQt6.QtGui import QFont
-from car_list import CarListWidget
+from Car.car_list import CarListWidget
+from agency_list import AgencyList
+from customer_list import CustomerList
+from database import get_role_by_id
+from employee_list import EmployeeList
+from order_list import OrderList
+from partner_list import PartnerList
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Showroom Vinfest")
-        self.setGeometry(200, 150, 1500, 800)
+        self.setWindowTitle('Car Showroom Management')
 
+        # Sidebar
+        self.sidebar = QWidget()
+        self.sidebar_layout = QVBoxLayout()
+
+        self.car_list_button = QPushButton('Danh sách xe')
+        # self.car_list_button.clicked.connect(self.show_car_list)
+        self.sidebar_layout.addWidget(self.car_list_button)
+
+        self.order_list_button = QPushButton('Danh sách đơn hàng')
+        self.order_list_button.clicked.connect(self.show_order_list)
+        self.sidebar_layout.addWidget(self.order_list_button)
+
+        self.partner_list_button = QPushButton('Hãng xe đối tác')
+        self.partner_list_button.clicked.connect(self.show_partner_list)
+        self.sidebar_layout.addWidget(self.partner_list_button)
+
+        self.customer_list_button = QPushButton('Danh sách khách hàng')
+        self.customer_list_button.clicked.connect(self.show_customer_list)
+        self.sidebar_layout.addWidget(self.customer_list_button)
+
+        self.employee_list_button = QPushButton('Danh sách nhân viên')
+        self.employee_list_button.clicked.connect(self.show_employee_list)
+        self.sidebar_layout.addWidget(self.employee_list_button)
+
+        self.agency_list_button = QPushButton('Danh sách đại lý')
+        self.agency_list_button.clicked.connect(self.show_agency_list)
+        self.sidebar_layout.addWidget(self.agency_list_button)
+
+        self.sidebar.setLayout(self.sidebar_layout)
+
+        # Main Layout
+        self.main_layout = QVBoxLayout()
         self.main_widget = QWidget()
-        self.main_layout = QHBoxLayout(self.main_widget)
+        self.main_widget.setLayout(self.main_layout)
 
-        self.sidebar = self.create_sidebar()
-        self.main_layout.addWidget(self.sidebar)
-
-        self.content = CarListWidget()
-        self.main_layout.addWidget(self.content)
-        self.main_layout.setStretch(1, 1)
-
-        self.user_role = None
         self.setCentralWidget(self.main_widget)
+
+        # Initial view
+        self.show_car_list()
 
     def create_sidebar(self):
         self.setStyleSheet("""
         QPushButton { 
             padding: 10px; background-color: #444444; color: #FFFFFF; border: none; text-align: left;
+            border-radius: 10px; /* Thêm dòng này */
         }
          """)
         sidebar = QWidget()
@@ -69,13 +103,42 @@ class MainWindow(QMainWindow):
         return sidebar
 
     def show_main_window(self, name, user_id, role_id):
-        self.user_label.setText(f"{name}\nID: {user_id}")
-        self.user_role = role_id  # Store the user role
+        role = get_role_by_id(role_id)
+        self.user_label.setText(f"{name}\nChức danh: {role}\nID: {user_id}")
+        self.user_role = role_id
         # Kiểm tra nếu CarListWidget có phương thức set_permissions
         if hasattr(self.content, 'set_permissions'):
             self.content.set_permissions(role_id)  # Pass the role to the content widget
         self.show()
 
+    def clear_main_layout(self):
+        for i in reversed(range(self.main_layout.count())):
+            widget = self.main_layout.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
+
+
+
+    def show_order_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(OrderList())
+
+    def show_partner_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(PartnerList())
+
+    def show_customer_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(CustomerList())
+
+    def show_employee_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(EmployeeList())
+
+    def show_agency_list(self):
+        self.clear_main_layout()
+        self.main_layout.addWidget(AgencyList())
+        
     def logout(self):
         print("Logout clicked")
         self.hide()

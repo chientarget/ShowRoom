@@ -6,13 +6,12 @@
     background-color: #1e1e1e;
 }
 
-/* Button styles */
 QPushButton {
     background-color: #1976D2;
     color: #ffffff;
     border: none;
-    border-radius: 4px;
     margin: 4px;
+    border-radius: 10px;
 }
 
 QPushButton:hover {
@@ -38,12 +37,22 @@ QLabel {
 }
 
 /* Input field styles */
-QLineEdit, QTextEdit, QComboBox {
+QTextEdit, QComboBox {
     border: 1px solid #cccccc;
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 4px 8px;
     margin: 4px 0;
 }
+
+QLineEdit {
+    background-color: #FFFFFF;
+    border: 1px solid #CCCCCC;
+    border-radius: 10px; /* Thêm dòng này */
+    padding-left: 10px;
+    color: #000000;
+    font-size: 16px;
+}
+
 
 QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
     border-color: #1976D2;
@@ -84,3 +93,4 @@ QScrollBar::handle:vertical {
     background: #cccccc;
     min-height: 20px;
 }
+

@@ -1,6 +1,6 @@
 # car_forms.py
 from PyQt6.QtWidgets import QDialog, QGridLayout, QLineEdit, QLabel, QDialogButtonBox, QComboBox
-from car import Car
+from Car.car import Car
 from database import get_car_details, add_car
 
 
@@ -13,7 +13,6 @@ class CarEditDialog(QDialog):
 
     def init_ui(self):
         layout = QGridLayout(self)
-
         car = Car.get_car_by_id(self.car_id)
 
         self.ten_xe_edit = QLineEdit(car.name)

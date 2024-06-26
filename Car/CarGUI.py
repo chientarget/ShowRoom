@@ -1,10 +1,9 @@
 import os
 import sqlite3
-
-from PyQt6.QtWidgets import *
-from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtCore import Qt
-from Car.Car import Car, get_cars
+from PyQt6.QtGui import QFont, QIcon, QColor
+from PyQt6.QtWidgets import *
+from Car.Car import Car
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
@@ -14,12 +13,18 @@ delete_icon_path = os.path.join(base_dir, "img", "img_crud", "delete.svg")
 
 def format_price(price):
     if price >= 1_000_000_000:
-        formatted_price = f"{price / 1_000_000_000:.2f} Tỷ"
+        return f"{price / 1_000_000_000:.2f} Tỷ"
     elif price >= 1_000_000:
-        formatted_price = f"{price / 1_000_000:.0f} Triệu"
+        return f"{price / 1_000_000:.0f} Triệu"
     else:
-        formatted_price = f"{price:,} vnđ"
-    return formatted_price
+        return f"{price:,} vnđ"
+
+def format_warranty(warranty):
+    return f"{warranty} năm"
+
+
+def format_capacity(capacity):
+    return f"{capacity}L"
 
 
 class CarGUI(QWidget):
@@ -38,10 +43,12 @@ class CarGUI(QWidget):
 
         self.search_vin = QLineEdit()
         self.search_vin.setPlaceholderText("Tìm theo VIN")
+        self.search_vin.setFixedHeight(35)
         search_layout.addWidget(self.search_vin)
 
         self.search_name_color = QLineEdit()
         self.search_name_color.setPlaceholderText("Tìm theo tên, màu sắc")
+        self.search_name_color.setFixedHeight(35)
         search_layout.addWidget(self.search_name_color)
 
         self.search_year = QComboBox()
@@ -96,14 +103,45 @@ class CarGUI(QWidget):
         self.car_table.setRowCount(0)
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
-        cursor.execute('''
+
+        query = '''
             SELECT car.name, car.produced_year, car.color, car.car_type, 
                    car.warranty_year, car.price, car.fuel_capacity, car.status, car.vin,
                    series.name AS series_name, model.name AS model_name
             FROM Car car
             JOIN Series series ON car.series_id = series.id
             JOIN Model model ON car.model_id = model.id
-        ''')
+            WHERE 1=1
+        '''
+        params = []
+
+
+
+        if self.search_vin.text():
+            query += " AND car.vin LIKE ?"
+            params.append(f"%{self.search_vin.text()}%")
+
+        if self.search_name_color.text():
+            query += " AND (car.name LIKE ? OR car.color LIKE ?)"
+            params.extend([f"%{self.search_name_color.text()}%", f"%{self.search_name_color.text()}%"])
+
+        if self.search_year.currentText() != "Tất cả":
+            query += " AND car.produced_year = ?"
+            params.append(int(self.search_year.currentText()))
+
+        if self.search_price_range.currentText() != "Tất cả":
+            if self.search_price_range.currentText() == "Dưới 500 triệu":
+                query += " AND car.price < 500000000"
+            elif self.search_price_range.currentText() == "500 triệu - 1 tỷ":
+                query += " AND car.price BETWEEN 500000000 AND 1000000000"
+            elif self.search_price_range.currentText() == "Trên 1 tỷ":
+                query += " AND car.price > 1000000000"
+
+        if self.search_car_type.currentText() != "Tất cả":
+            query += " AND car.car_type = ?"
+            params.append(self.search_car_type.currentText())
+
+        cursor.execute(query, params)
         cars = cursor.fetchall()
         conn.close()
 
@@ -115,7 +153,15 @@ class CarGUI(QWidget):
             row_position = self.car_table.rowCount()
             self.car_table.insertRow(row_position)
             for column_number, data in enumerate(car):
-                self.car_table.setItem(row_position, column_number, QTableWidgetItem(str(data)))
+                table_item = QTableWidgetItem(str(data))
+                if column_number == 7:  # Status column
+                    if data == "Đã bán":
+                        table_item.setBackground(QColor("#43BF5E"))
+                    elif data == "Chưa bán":
+                        table_item.setBackground(QColor("#8E8EE9"))
+                    elif data == "Đặt cọc":
+                        table_item.setBackground(QColor("#E9938E"))
+                self.car_table.setItem(row_position, column_number, table_item)
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
@@ -136,12 +182,16 @@ class CarGUI(QWidget):
             delete_button.clicked.connect(lambda _, car_id=car[0]: self.delete_car(car_id))
             self.car_table.setCellWidget(row_position, 13, delete_button)
 
-        self.car_table.resizeColumnsToContents()
+            if car[7] == "Đã bán":
+                sold_count += 1
+            elif car[7] == "Chưa bán":
+                not_sold_count += 1
+            elif car[7] == "Đặt cọc":
+                reserved_count += 1
 
-        # Adjust column widths to be slightly wider than content
-        for col in range(10):  # Only adjust data columns
-            current_width = self.car_table.columnWidth(col)
-            self.car_table.setColumnWidth(col, current_width + 20)
+
+
+        self.car_table.resizeColumnsToContents()
 
         # Ensure button columns are only as wide as the buttons
         button_columns = [11, 12, 13]
@@ -149,9 +199,6 @@ class CarGUI(QWidget):
             self.car_table.setColumnWidth(col, 40)
 
         # Update the summary labels
-        sold_count = sum(1 for car in cars if car[7] == "Đã bán")
-        not_sold_count = sum(1 for car in cars if car[7] == "Chưa bán")
-        reserved_count = sum(1 for car in cars if car[7] == "Đặt cọc")
         self.summary_label.setText(f"Đã bán: {sold_count}   Chưa bán: {not_sold_count}   Đặt cọc: {reserved_count}")
 
     def add_car(self):
@@ -197,7 +244,7 @@ class CarEditDialog(QDialog):
         self.vin_edit = QLineEdit(car.vin)
         self.nam_bao_hanh_edit = QLineEdit(str(car.warranty_year))
         self.trang_thai_edit = QComboBox()
-        self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Chờ mở bán", "Đặt cọc"])
+        self.trang_thai_edit.addItems(["Chưa bán", "Đã bán", "Đặt cọc"])
         self.trang_thai_edit.setCurrentText(car.status)
 
         color = "background-color: #F2F2F2; padding: 5px 10px 5px 10px;  border-radius: 15px;"
@@ -406,6 +453,7 @@ class CarAddDialog(QDialog):
         super().accept()
 
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -502,6 +550,10 @@ class MainWindow(QMainWindow):
             row_position = self.car_table.rowCount()
             self.car_table.insertRow(row_position)
             for column_number, data in enumerate(car):
+                if column_number == 4:  # Warranty column
+                    data = format_warranty(data)
+                elif column_number == 6:  # Capacity column
+                    data = format_capacity(data)
                 self.car_table.setItem(row_position, column_number, QTableWidgetItem(str(data)))
 
             # Add buttons for details, edit, delete with icons

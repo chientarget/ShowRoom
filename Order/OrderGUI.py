@@ -11,6 +11,15 @@ info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
 edit_icon_path = os.path.join(base_dir, "img", "img_crud", "edit.svg")
 delete_icon_path = os.path.join(base_dir, "img", "img_crud", "delete.svg")
 
+
+def format_price(price):
+    if price >= 1_000_000_000:
+        formatted_price = f"{price / 1_000_000_000:.2f} Tỷ"
+    elif price >= 1_000_000:
+        formatted_price = f"{price / 1_000_000:.0f} Triệu"
+    else:
+        formatted_price = f"{price:,} vnđ"
+    return formatted_price
 class OrderListWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -72,9 +81,14 @@ class OrderListWidget(QWidget):
         for row_number, order in enumerate(orders):
             self.order_table.insertRow(row_number)
             for column_number, data in enumerate(order):
-                self.order_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
+                if column_number == 0:
+                    item = QTableWidgetItem(str(data))
+                    item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                    self.order_table.setItem(row_number, column_number, item)
+                else:
+                    self.order_table.setItem(row_number, column_number, QTableWidgetItem(str(data)))
 
-            # Add action buttons
+
             action_widget = QWidget()
             action_layout = QHBoxLayout(action_widget)
             action_layout.setContentsMargins(0, 0, 0, 0)
@@ -98,6 +112,9 @@ class OrderListWidget(QWidget):
             delete_button.clicked.connect(lambda _, order_id=order[0]: self.delete_order(order_id))
             action_layout.addWidget(delete_button)
 
+            self.order_table.setColumnWidth(0, 80)
+            self.order_table.setColumnWidth(3, 80)
+            self.order_table.setColumnWidth(9, 69)
             self.order_table.setCellWidget(row_number, 11, action_widget)
 
     def add_order(self):

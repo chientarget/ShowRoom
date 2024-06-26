@@ -19,7 +19,7 @@ CREATE TABLE Car (
     model_id INTEGER,
     airbags TEXT,
     status TEXT,
---     Chưa bán", "Đã bán", "Chờ mở bán
+--     Chưa bán", "Đã bán", "Đặt cọc"
     FOREIGN KEY (dealer_id) REFERENCES Dealer(id),
     FOREIGN KEY (series_id) REFERENCES Series(id),
     FOREIGN KEY (Partner_id) REFERENCES Partner(id),

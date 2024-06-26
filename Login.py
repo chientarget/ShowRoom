@@ -210,10 +210,10 @@ class LoginWindow(QMainWindow):
 
         user = get_user(username)
 
-        if user and user[2] == password:  # Assuming password is stored in the third column
+        if user and user[2] == password:
             print("Login successful")
             self.hide()
-            self.main_window.show_main_window(user[3], user[0], user[4])
+            self.main_window.show_main_window(user[3], user[0], user[8])
         else:
             print("Login failed")
             QMessageBox.warning(self, "Thất bại", "Tên đăng nhập hoặc mật khẩu không đúng.")
@@ -249,18 +249,18 @@ class LoginWindow(QMainWindow):
             print("Username already exists")
             QMessageBox.warning(self, "Thất bại", "Tên đăng nhập đã tồn tại.")
 
-
-if __name__ == '__main__':
-    from main import MainWindow
-
-    print("Starting login application")
-    app = QApplication(sys.argv)
-    app.setStyleSheet("""
-        QWidget {
-            background-color: #000000;
-        }
-    """)
-    main_window = MainWindow()
-    login_window = LoginWindow(main_window)  # Create the LoginWindow
-    login_window.show()
-    sys.exit(app.exec())
+#
+# if __name__ == '__main__':
+#     from main import MainWindow
+#
+#     print("Starting login application")
+#     app = QApplication(sys.argv)
+#     app.setStyleSheet("""
+#         QWidget {
+#             background-color: #000000;
+#         }
+#     """)
+#     main_window = MainWindow()
+#     login_window = LoginWindow(main_window)  # Create the LoginWindow
+#     login_window.show()
+#     sys.exit(app.exec())

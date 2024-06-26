@@ -4,7 +4,7 @@ CREATE TABLE Car (
     produced_year INTEGER,
     color TEXT,
     name TEXT,
-    car_type TEXT,
+    car_type_id INTEGER,
     fuel_capacity TEXT,
     material_consumption TEXT,
     seat_num INTEGER,
@@ -13,20 +13,22 @@ CREATE TABLE Car (
     vin TEXT UNIQUE,
     dealer_id INTEGER,
     warranty_year INTEGER,
-    series_id INTEGER,
     Partner_id INTEGER,
     drive_id INTEGER,
     model_id INTEGER,
     airbags TEXT,
     status TEXT,
 --     Chưa bán", "Đã bán", "Đặt cọc"
+    FOREIGN KEY (car_type_id) REFERENCES Car_Type(id),
     FOREIGN KEY (dealer_id) REFERENCES Dealer(id),
-    FOREIGN KEY (series_id) REFERENCES Series(id),
     FOREIGN KEY (Partner_id) REFERENCES Partner(id),
     FOREIGN KEY (drive_id) REFERENCES Drive(id),
     FOREIGN KEY (model_id) REFERENCES Model(id)
 );
-
+CREATE TABLE Car_Type (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+);
 -- Table: Model
 CREATE TABLE Model (
     id INTEGER PRIMARY KEY,
@@ -35,12 +37,6 @@ CREATE TABLE Model (
 
 -- Table: Drive
 CREATE TABLE Drive (
-    id INTEGER PRIMARY KEY,
-    name TEXT
-);
-
--- Table: Series
-CREATE TABLE Series (
     id INTEGER PRIMARY KEY,
     name TEXT
 );
@@ -139,27 +135,40 @@ CREATE TABLE History (
 
 
 -- Dữ liệu mẫu cho bảng Car
-INSERT INTO Car (produced_year, color, name, car_type, fuel_capacity, material_consumption, seat_num, engine, price, vin, dealer_id, warranty_year, series_id, Partner_id, drive_id, model_id, airbags,status) VALUES
-(2024, 'Đỏ', 'VinFast VF 6', 'Crossover', '90', '6.5L/100km', 5, 'Điện', 675000000, 'VIN001', 1, 3, 1, 1, 1, 1, '6 túi khí', 'Chưa bán'),
-(2024, 'Xanh', 'VinFast VF 7', 'SUV', '90', '7.5L/100km', 5, 'Điện', 850000000, 'VIN002', 1, 3, 1, 1, 1, 2, '8 túi khí', 'Đã bán'),
-(2024, 'Đen', 'VinFast VF 8', 'SUV', '90', '8.0L/100km', 7, 'Điện', 1050000000, 'VIN003', 2, 3, 1, 1, 1, 3, '10 túi khí', 'Cho mở bán'),
-(2024, 'Trắng', 'VinFast VF 9', 'SUV', '90', '8.5L/100km', 7, 'Điện', 1250000000, 'VIN004', 2, 3, 1, 1, 1, 4, '12 túi khí', 'Đặt cọc'),
-(2024, 'Bạc', 'Honda City', 'Sedan', '90', '5.5L/100km', 5, 'Xăng 1.5L', 529000000, 'VIN005', 3, 3, 2, 2, 2, 5, '6 túi khí', 'Chưa bán'),
-(2024, 'Xám', 'Honda CR-V', 'SUV', '90', '7.0L/100km', 7, 'Xăng 1.5L Turbo', 998000000, 'VIN006', 3, 3, 2, 2, 2, 6, '8 túi khí', 'Chưa bán'),
-(2024, 'Đen', 'Honda Civic', 'Sedan', '90', '6.0L/100km', 5, 'Xăng 1.5L Turbo', 730000000, 'VIN007', 4, 3, 2, 2, 2, 7, '6 túi khí', 'Đã bán'),
-(2024, 'Trắng', 'Rolls-Royce Ghost', 'Sedan', '90', '15.0L/100km', 5, 'V12 6.75L', 30000000000, 'VIN008', 5, 4, 3, 3, 3, 8, '8 túi khí', 'Chưa bán'),
-(2024, 'Đen', 'Rolls-Royce Phantom', 'Sedan', '90', '16.0L/100km', 5, 'V12 6.75L', 40000000000, 'VIN009', 5, 4, 3, 3, 3, 9, '10 túi khí', 'Đặt cọc'),
-(2024, 'Xanh', 'Toyota Camry', 'Sedan', '90', '6.5L/100km', 5, 'Xăng 2.5L', 1105000000, 'VIN010', 6, 3, 4, 4, 2, 10, '7 túi khí', 'Chưa bán'),
-(2024, 'Bạc', 'Toyota Corolla Cross', 'Crossover', '90', '5.5L/100km', 5, 'Hybrid 1.8L', 720000000, 'VIN011', 6, 3, 4, 4, 2, 11, '7 túi khí', 'Đã bán'),
-(2024, 'Đỏ', 'Mazda CX-5', 'SUV', '90', '7.0L/100km', 5, 'Xăng 2.0L', 839000000, 'VIN012', 7, 3, 5, 5, 2, 12, '6 túi khí', 'Chưa bán'),
-(2024, 'Trắng', 'Mazda3', 'Sedan', '90', '6.0L/100km', 5, 'Xăng 1.5L', 669000000, 'VIN013', 7, 3, 5, 5, 2, 13, '6 túi khí', 'Đặt cọc'),
-(2024, 'Xám', 'Mercedes-Benz C-Class', 'Sedan', '90', '7.0L/100km', 5, 'Xăng 1.5L Turbo', 1669000000, 'VIN014', 8, 3, 6, 6, 2, 14, '9 túi khí', 'Chưa bán'),
-(2024, 'Đen', 'Mercedes-Benz GLC', 'SUV', '90', '8.0L/100km', 5, 'Xăng 2.0L Turbo', 1859000000, 'VIN015', 8, 3, 6, 6, 2, 15, '9 túi khí', 'Đặt cọc'),
-(2024, 'Trắng', 'BMW 3 Series', 'Sedan', '90', '6.5L/100km', 5, 'Xăng 2.0L Turbo', 1529000000, 'VIN016', 9, 3, 7, 7, 2, 16, '8 túi khí', 'Đặt cọc'),
-(2024, 'Xanh', 'BMW X3', 'SUV', '90', '7.5L/100km', 5, 'Xăng 2.0L Turbo', 1999000000, 'VIN017', 9, 3, 7, 7, 2, 17, '8 túi khí', 'Đặt cọc'),
-(2024, 'Đỏ', 'Audi A4', 'Sedan', '90', '6.0L/100km', 5, 'Xăng 2.0L Turbo', 1700000000, 'VIN018', 10, 3, 8, 8, 2, 18, '8 túi khí', 'Đã bán'),
-(2024, 'Bạc', 'Audi Q5', 'SUV', '90', '7.5L/100km', 5, 'Xăng 2.0L Turbo', 2400000000, 'VIN019', 10, 3, 8, 8, 2, 19, '8 túi khí', 'Chưa bán'),
-(2024, 'Đen', 'Lexus ES', 'Sedan', '90', '6.5L/100km', 5, 'Xăng 2.5L', 2540000000, 'VIN020', 11, 3, 9, 9, 2, 20, '10 túi khí', 'Chưa bán');
+INSERT INTO Car (produced_year, color, name, car_type_id, fuel_capacity, material_consumption, seat_num, engine, price, vin, dealer_id, warranty_year, Partner_id, drive_id, model_id, airbags,status) VALUES
+(2024, 'Đỏ', 'VinFast VF 6', 1, '90', '6.5L/100km', 5, 'Điện', 675000000, 'VIN001', 1, 3, 1, 1, 1, '6 túi khí', 'Chưa bán'),
+(2024, 'Xanh', 'VinFast VF 7', 2, '90', '7.5L/100km', 5, 'Điện', 850000000, 'VIN002', 1, 3, 1, 1, 2, '8 túi khí', 'Đã bán'),
+(2024, 'Đen', 'VinFast VF 8', 3, '90', '8.0L/100km', 7, 'Điện', 1050000000, 'VIN003', 2, 3, 1, 1, 3, '10 túi khí', 'Cho mở bán'),
+(2024, 'Trắng', 'VinFast VF 9', 4, '90', '8.5L/100km', 7, 'Điện', 1250000000, 'VIN004', 2, 3, 1, 1, 4, '12 túi khí', 'Đặt cọc'),
+(2024, 'Bạc', 'Honda City', 5, '90', '5.5L/100km', 5, 'Xăng 1.5L', 529000000, 'VIN005', 3, 3, 2, 2, 5, '6 túi khí', 'Chưa bán'),
+(2024, 'Xám', 'Honda CR-V', 6, '90', '7.0L/100km', 7, 'Xăng 1.5L Turbo', 998000000, 'VIN006', 3, 3, 2, 2, 6, '8 túi khí', 'Chưa bán'),
+(2024, 'Đen', 'Honda Civic', 7, '90', '6.0L/100km', 5, 'Xăng 1.5L Turbo', 730000000, 'VIN007', 4, 3, 2, 2, 7, '6 túi khí', 'Đã bán'),
+(2024, 'Trắng', 'Rolls-Royce Ghost', 1, '90', '15.0L/100km', 5, 'V12 6.75L', 30000000000, 'VIN008', 5, 4, 3, 3, 8, '8 túi khí', 'Chưa bán'),
+(2024, 'Đen', 'Rolls-Royce Phantom',2, '90', '16.0L/100km', 5, 'V12 6.75L', 40000000000, 'VIN009', 5, 4, 3, 3, 9, '10 túi khí', 'Đặt cọc'),
+(2024, 'Xanh', 'Toyota Camry', 3, '90', '6.5L/100km', 5, 'Xăng 2.5L', 1105000000, 'VIN010', 6, 3, 4, 2, 10, '7 túi khí', 'Chưa bán'),
+(2024, 'Bạc', 'Toyota Corolla Cross', 'Crossover', '90', '5.5L/100km', 5, 'Hybrid 1.8L', 720000000, 'VIN011', 6, 3, 4, 2, 11, '7 túi khí', 'Đã bán'),
+(2024, 'Đỏ', 'Mazda CX-5', 'SUV', '90', '7.0L/100km', 5, 'Xăng 2.0L', 839000000, 'VIN012', 7, 3, 5, 2, 12, '6 túi khí', 'Chưa bán'),
+(2024, 'Trắng', 'Mazda3', 'Sedan', '90', '6.0L/100km', 5, 'Xăng 1.5L', 669000000, 'VIN013', 7, 3, 5, 2, 13, '6 túi khí', 'Đặt cọc'),
+(2024, 'Xám', 'Mercedes-Benz C-Class', 6, '90', '7.0L/100km', 5, 'Xăng 1.5L Turbo', 1669000000, 'VIN014', 8, 3, 6, 2, 14, '9 túi khí', 'Chưa bán'),
+(2024, 'Đen', 'Mercedes-Benz GLC', 2, '90', '8.0L/100km', 5, 'Xăng 2.0L Turbo', 1859000000, 'VIN015', 8, 3, 6, 2, 15, '9 túi khí', 'Đặt cọc'),
+(2024, 'Trắng', 'BMW 3 Series',2, '90', '6.5L/100km', 5, 'Xăng 2.0L Turbo', 1529000000, 'VIN016', 9, 3, 7, 2, 16, '8 túi khí', 'Đặt cọc'),
+(2024, 'Xanh', 'BMW X3', 1, '90', '7.5L/100km', 5, 'Xăng 2.0L Turbo', 1999000000, 'VIN017', 9, 3, 7, 2, 17, '8 túi khí', 'Đặt cọc'),
+(2024, 'Đỏ', 'Audi A4',3,'90', '6.0L/100km', 5, 'Xăng 2.0L Turbo', 1700000000, 'VIN018', 10, 3, 8, 2, 18, '8 túi khí', 'Đã bán'),
+(2024, 'Bạc', 'Audi Q5', 3,'90', '7.5L/100km', 5, 'Xăng 2.0L Turbo', 2400000000, 'VIN019', 10, 3, 8, 2, 19, '8 túi khí', 'Chưa bán'),
+(2024, 'Đen', 'Lexus ES', 3, '90', '6.5L/100km', 5, 'Xăng 2.5L', 2540000000, 'VIN020', 11, 3, 9, 2, 20, '10 túi khí', 'Chưa bán');
+
+-- Dữ liệu mẫu cho bảng Car_Type
+
+INSERT INTO Car_Type (name) VALUES
+('Sedan'),
+('Hatchback'),
+('SUV'),
+('CUV'),
+('MPV/Minivan'),
+('Pickup'),
+('Coupe'),
+('Convertible/Cabriolet'),
+('Luxury');
 
 
 -- Dữ liệu mẫu cho bảng Model
@@ -184,18 +193,6 @@ INSERT INTO Drive (name) VALUES
 
 
 
--- Dữ liệu mẫu cho bảng Series
-INSERT INTO Series (name) VALUES
-('VinFast EV'),
-('Honda Sedan'),
-('Rolls-Royce Luxury'),
-('Toyota Hybrid'),
-('Mazda SUV'),
-('Mercedes-Benz Luxury'),
-('BMW Performance'),
-('Audi Premium'),
-('Lexus Luxury');
-
 
 -- Dữ liệu mẫu cho bảng Dealer
 INSERT INTO Dealer (name, address, phone, zip, email, open_time, close_time, description) VALUES
@@ -210,6 +207,9 @@ INSERT INTO Dealer (name, address, phone, zip, email, open_time, close_time, des
 ('BMW Long Biên', 'Số 1 Ngô Gia Tự, Long Biên, Hà Nội', '0243777888', '100000', 'longbien@bmw.com.vn', '08:00:00', '18:30:00', 'Đại lý BMW Long Biên'),
 ('Audi Hà Nội', '8A Phạm Hùng, Nam Từ Liêm, Hà Nội', '0243999000', '100000', 'hanoi@audi.vn', '08:00:00', '18:00:00', 'Đại lý Audi chính hãng tại Hà Nội'),
 ('Lexus Thảo Điền', '264 Mai Chí Thọ, Quận 2, TP.HCM', '0283222333', '700000', 'thaodien@lexus.com.vn', '08:00:00', '19:00:00', 'Đại lý Lexus Thảo Điền');
+
+
+
 
 -- Dữ liệu mẫu cho bảng Human_resources
 INSERT INTO Human_resources (username, password, name, phone, email, address, gender, role_id) VALUES

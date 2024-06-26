@@ -4,7 +4,7 @@ import sqlite3
 from PyQt6.QtWidgets import*
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtCore import Qt
-from Order import Order  # Update the import if necessary
+from Order.Order import Order
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
@@ -135,6 +135,7 @@ class OrderListWidget(QWidget):
         dialog = OrderEditDialog(order_id, self)
         if dialog.exec():
             self.load_orders()
+
 
 
 class OrderEditDialog(QDialog):

@@ -1,4 +1,3 @@
-# Order.py
 import sqlite3
 
 class Order:

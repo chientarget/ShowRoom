@@ -41,34 +41,79 @@ class CarGUI(QWidget):
         header.setStyleSheet("color: #09AD90; font-family: Roboto; font-size: 30px; margin-bottom: 20px;")
         layout.addWidget(header)
 
-        search_layout = QHBoxLayout()
+        search_layout = QGridLayout()
 
+        # Search by VIN
+        search_vin_label = QLabel("Tìm theo VIN:")
         self.search_vin = QLineEdit()
         self.search_vin.setPlaceholderText("Tìm theo VIN")
+        self.search_vin.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_vin.setFixedHeight(35)
-        search_layout.addWidget(self.search_vin)
+        search_layout.addWidget(search_vin_label, 0, 0)
+        search_layout.addWidget(self.search_vin, 1, 0)
 
-        self.search_name_color = QLineEdit()
-        self.search_name_color.setPlaceholderText("Tìm theo tên, màu sắc")
-        self.search_name_color.setFixedHeight(35)
-        search_layout.addWidget(self.search_name_color)
+        # Search by name
+        search_name_label = QLabel("Tìm theo tên:")
+        self.search_name = QLineEdit()
+        self.search_name.setPlaceholderText("Tìm theo tên")
+        self.search_name.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_name.setFixedHeight(35)
+        search_layout.addWidget(search_name_label, 0, 1)
+        search_layout.addWidget(self.search_name, 1, 1)
 
+        # Search by color
+        search_color_label = QLabel("Tìm theo màu sắc:")
+        self.search_color = QComboBox()
+        colors = self.get_all_colors()
+        self.search_color.addItems(["Tất cả"] + colors)
+        self.search_color.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_color.setFixedHeight(35)
+        search_layout.addWidget(search_color_label, 0, 2)
+        search_layout.addWidget(self.search_color, 1, 2)
+
+        # Search by year
+        search_year_label = QLabel("Tìm theo năm:")
         self.search_year = QComboBox()
         self.search_year.addItems(["Tất cả"] + [str(year) for year in range(2000, 2025)])
-        search_layout.addWidget(self.search_year)
+        self.search_year.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_year.setFixedHeight(35)
+        search_layout.addWidget(search_year_label, 0, 3)
+        search_layout.addWidget(self.search_year, 1, 3)
 
+        # Search by price range
+        search_price_range_label = QLabel("Tìm theo giá:")
         self.search_price_range = QComboBox()
         self.search_price_range.addItems(["Tất cả", "Dưới 500 triệu", "500 triệu - 1 tỷ", "Trên 1 tỷ"])
-        search_layout.addWidget(self.search_price_range)
+        self.search_price_range.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_price_range.setFixedHeight(35)
+        search_layout.addWidget(search_price_range_label, 0, 4)
+        search_layout.addWidget(self.search_price_range, 1, 4)
 
+        # Search by car type
+        search_car_type_label = QLabel("Tìm theo dòng xe:")
         self.search_car_type = QComboBox()
         car_types = Car.get_foreign_key_data("Car_Type")
         self.search_car_type.addItems(["Tất cả"] + list(car_types.values()))
-        search_layout.addWidget(self.search_car_type)
+        self.search_car_type.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_car_type.setFixedHeight(35)
+        search_layout.addWidget(search_car_type_label, 0, 5)
+        search_layout.addWidget(self.search_car_type, 1, 5)
 
+        # Search by dealer
+        search_dealer_label = QLabel("Tìm theo đại lý:")
+        self.search_dealer = QComboBox()
+        dealers = Car.get_foreign_key_data("Dealer")
+        self.search_dealer.addItems(["Tất cả"] + list(dealers.values()))
+        self.search_dealer.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
+        self.search_dealer.setFixedHeight(35)
+        search_layout.addWidget(search_dealer_label, 0, 6)
+        search_layout.addWidget(self.search_dealer, 1, 6)
+
+        # Search button
         search_button = QPushButton("Tìm kiếm")
         search_button.clicked.connect(self.load_cars)
-        search_layout.addWidget(search_button)
+        search_button.setStyleSheet("padding:10px 30px; background-color: #1e1e1e; color: white; border: 1px solid #cccccc; text-align: center; border-radius: 19px;")
+        search_layout.addWidget(search_button, 1, 7)
 
         layout.addLayout(search_layout)
 
@@ -107,6 +152,14 @@ class CarGUI(QWidget):
         self.setLayout(layout)
         self.load_cars()
 
+    def get_all_colors(self):
+        conn = sqlite3.connect('showroom.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT DISTINCT color FROM Car')
+        colors = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return colors
+
     def load_cars(self):
         self.car_table.setRowCount(0)
         conn = sqlite3.connect('showroom.db')
@@ -130,9 +183,13 @@ class CarGUI(QWidget):
             query += " AND car.vin LIKE ?"
             params.append(f"%{self.search_vin.text()}%")
 
-        if self.search_name_color.text():
-            query += " AND (car.name LIKE ? OR car.color LIKE ?)"
-            params.extend([f"%{self.search_name_color.text()}%", f"%{self.search_name_color.text()}%"])
+        if self.search_name.text():
+            query += " AND car.name LIKE ?"
+            params.append(f"%{self.search_name.text()}%")
+
+        if self.search_color.currentText() != "Tất cả":
+            query += " AND car.color = ?"
+            params.append(self.search_color.currentText())
 
         if self.search_year.currentText() != "Tất cả":
             query += " AND car.produced_year = ?"
@@ -147,10 +204,14 @@ class CarGUI(QWidget):
                 query += " AND car.price > 1000000000"
 
         if self.search_car_type.currentText() != "Tất cả":
-            car_types = Car.get_foreign_key_data("Car_Type")
             car_type_id = Car.get_id_by_name("Car_Type", self.search_car_type.currentText())
             query += " AND car.car_type_id = ?"
             params.append(car_type_id)
+
+        if self.search_dealer.currentText() != "Tất cả":
+            dealer_id = Car.get_id_by_name("Dealer", self.search_dealer.currentText())
+            query += " AND car.dealer_id = ?"
+            params.append(dealer_id)
 
         cursor.execute(query, params)
         cars = cursor.fetchall()
@@ -312,50 +373,50 @@ class CarEditDialog(QDialog):
         layout.addWidget(QLabel("Tên xe:"), 1, 0)
         layout.addWidget(self.name_edit, 1, 1)
 
-        layout.addWidget(QLabel("Năm sản xuất:"), 1, 2)
-        layout.addWidget(self.produced_year_edit, 1, 3)
+        layout.addWidget(QLabel("Năm sản xuất:"), 2, 0)
+        layout.addWidget(self.produced_year_edit, 2, 1)
 
-        layout.addWidget(QLabel("Màu sắc:"), 2, 0)
-        layout.addWidget(self.color_edit, 2, 1)
+        layout.addWidget(QLabel("Màu sắc:"), 3, 0)
+        layout.addWidget(self.color_edit, 3, 1)
 
-        layout.addWidget(QLabel("Dòng xe:"), 2, 2)
-        layout.addWidget(self.car_type_edit, 2, 3)
+        layout.addWidget(QLabel("Dòng xe:"), 4, 0)
+        layout.addWidget(self.car_type_edit, 4, 1)
 
-        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 3, 0)
-        layout.addWidget(self.fuel_capacity_edit, 3, 1)
+        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 5, 0)
+        layout.addWidget(self.fuel_capacity_edit, 5, 1)
 
-        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 3, 2)
-        layout.addWidget(self.material_consumption_edit, 3, 3)
+        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 0, 2)
+        layout.addWidget(self.material_consumption_edit, 0, 3)
 
-        layout.addWidget(QLabel("Số ghế:"), 4, 0)
-        layout.addWidget(self.seat_num_edit, 4, 1)
+        layout.addWidget(QLabel("Số ghế:"), 1, 2)
+        layout.addWidget(self.seat_num_edit, 1, 3)
 
-        layout.addWidget(QLabel("Động cơ:"), 4, 2)
-        layout.addWidget(self.engine_edit, 4, 3)
+        layout.addWidget(QLabel("Động cơ:"), 2, 2)
+        layout.addWidget(self.engine_edit, 2, 3)
 
-        layout.addWidget(QLabel("Giá:"), 5, 0)
-        layout.addWidget(self.price_edit, 5, 1)
+        layout.addWidget(QLabel("Giá:"), 3, 2)
+        layout.addWidget(self.price_edit, 3, 3)
 
-        layout.addWidget(QLabel("VIN:"), 5, 2)
-        layout.addWidget(self.vin_edit, 5, 3)
+        layout.addWidget(QLabel("VIN:"), 4, 2)
+        layout.addWidget(self.vin_edit, 4, 3)
 
-        layout.addWidget(QLabel("Bảo hành:"), 6, 0)
-        layout.addWidget(self.warranty_year_edit, 6, 1)
+        layout.addWidget(QLabel("Bảo hành:"), 5, 2)
+        layout.addWidget(self.warranty_year_edit, 5, 3)
 
-        layout.addWidget(QLabel("Trạng thái:"), 6, 2)
-        layout.addWidget(self.status_edit, 6, 3)
+        layout.addWidget(QLabel("Trạng thái:"), 0, 4)
+        layout.addWidget(self.status_edit, 0, 5)
 
-        layout.addWidget(QLabel("Dealer:"), 7, 0)
-        layout.addWidget(self.dealer_edit, 7, 1)
+        layout.addWidget(QLabel("Dealer:"), 1, 4)
+        layout.addWidget(self.dealer_edit, 1, 5)
 
-        layout.addWidget(QLabel("Partner:"), 8, 0)
-        layout.addWidget(self.partner_edit, 8, 1)
+        layout.addWidget(QLabel("Partner:"), 2, 4)
+        layout.addWidget(self.partner_edit, 2, 5)
 
-        layout.addWidget(QLabel("Model:"), 9, 0)
-        layout.addWidget(self.model_edit, 9, 1)
+        layout.addWidget(QLabel("Model:"), 3, 4)
+        layout.addWidget(self.model_edit, 3, 5)
 
-        layout.addWidget(QLabel("Airbags:"), 9, 2)
-        layout.addWidget(self.airbags_edit, 9, 3)
+        layout.addWidget(QLabel("Airbags:"), 4, 4)
+        layout.addWidget(self.airbags_edit, 4, 5)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
@@ -365,7 +426,7 @@ class CarEditDialog(QDialog):
         save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
         cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
-        layout.addWidget(self.button_box, 10, 0, 1, 4)
+        layout.addWidget(self.button_box, 6, 0, 1, 6)
 
         self.setLayout(layout)
 
@@ -444,50 +505,50 @@ class CarAddDialog(QDialog):
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
         layout.addWidget(self.name_edit, 0, 1)
 
-        layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
-        layout.addWidget(self.produced_year_edit, 0, 3)
-
         layout.addWidget(QLabel("Màu sắc:"), 1, 0)
         layout.addWidget(self.color_edit, 1, 1)
-
-        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
-        layout.addWidget(self.car_type_edit, 1, 3)
 
         layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
         layout.addWidget(self.fuel_capacity_edit, 2, 1)
 
-        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
-        layout.addWidget(self.material_consumption_edit, 2, 3)
-
         layout.addWidget(QLabel("Số ghế:"), 3, 0)
         layout.addWidget(self.seat_num_edit, 3, 1)
-
-        layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(self.engine_edit, 3, 3)
 
         layout.addWidget(QLabel("Giá:"), 4, 0)
         layout.addWidget(self.price_edit, 4, 1)
 
-        layout.addWidget(QLabel("VIN:"), 4, 2)
-        layout.addWidget(self.vin_edit, 4, 3)
-
         layout.addWidget(QLabel("Bảo hành:"), 5, 0)
         layout.addWidget(self.warranty_year_edit, 5, 1)
+
+        layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
+        layout.addWidget(self.produced_year_edit, 0, 3)
+
+        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
+        layout.addWidget(self.car_type_edit, 1, 3)
+
+        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
+        layout.addWidget(self.material_consumption_edit, 2, 3)
+
+        layout.addWidget(QLabel("Động cơ:"), 3, 2)
+        layout.addWidget(self.engine_edit, 3, 3)
+
+        layout.addWidget(QLabel("VIN:"), 4, 2)
+        layout.addWidget(self.vin_edit, 4, 3)
 
         layout.addWidget(QLabel("Trạng thái:"), 5, 2)
         layout.addWidget(self.status_edit, 5, 3)
 
-        layout.addWidget(QLabel("Dealer:"), 6, 0)
-        layout.addWidget(self.dealer_edit, 6, 1)
+        layout.addWidget(QLabel("Dealer:"), 0, 4)
+        layout.addWidget(self.dealer_edit, 0, 5)
 
-        layout.addWidget(QLabel("Partner:"), 7, 0)
-        layout.addWidget(self.partner_edit, 7, 1)
+        layout.addWidget(QLabel("Partner:"), 1, 4)
+        layout.addWidget(self.partner_edit, 1, 5)
 
-        layout.addWidget(QLabel("Model:"), 8, 0)
-        layout.addWidget(self.model_edit, 8, 1)
+        layout.addWidget(QLabel("Model:"), 2, 4)
+        layout.addWidget(self.model_edit, 2, 5)
 
-        layout.addWidget(QLabel("Airbags:"), 8, 2)
-        layout.addWidget(self.airbags_edit, 8, 3)
+        layout.addWidget(QLabel("Airbags:"), 3, 4)
+        layout.addWidget(self.airbags_edit, 3, 5)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
@@ -497,7 +558,7 @@ class CarAddDialog(QDialog):
         save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
         cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
-        layout.addWidget(self.button_box, 9, 0, 1, 4)
+        layout.addWidget(self.button_box, 6, 0, 1, 6)
 
         self.setLayout(layout)
 
@@ -542,37 +603,35 @@ class CarInfoDialog(QDialog):
 
         layout.addWidget(QLabel("Tên xe:"), 0, 0)
         layout.addWidget(QLabel(car_details[0]), 0, 1)
-        layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
-        layout.addWidget(QLabel(str(car_details[1])), 0, 3)
+        layout.addWidget(QLabel("Năm sản xuất:"), 1, 0)
+        layout.addWidget(QLabel(str(car_details[1])), 1, 1)
+        layout.addWidget(QLabel("Màu sắc:"), 2, 0)
+        layout.addWidget(QLabel(car_details[2]), 2, 1)
 
-        layout.addWidget(QLabel("Màu sắc:"), 1, 0)
-        layout.addWidget(QLabel(car_details[2]), 1, 1)
-        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
-        layout.addWidget(QLabel(Car.get_name_by_id("Car_Type", car_details[3])), 1, 3)
-
-        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
-        layout.addWidget(QLabel(f"{car_details[4]}L"), 2, 1)
+        layout.addWidget(QLabel("Dòng xe:"), 0, 2)
+        layout.addWidget(QLabel(Car.get_name_by_id("Car_Type", car_details[3])), 0, 3)
+        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 1, 2)
+        layout.addWidget(QLabel(f"{car_details[4]}L"), 1, 3)
         layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
         layout.addWidget(QLabel(car_details[5]), 2, 3)
 
-        layout.addWidget(QLabel("Số ghế:"), 3, 0)
-        layout.addWidget(QLabel(str(car_details[6])), 3, 1)
-        layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(QLabel(Car.get_name_by_id("Engine", car_details[7])), 3, 3)
+        layout.addWidget(QLabel("Số ghế:"), 0, 4)
+        layout.addWidget(QLabel(str(car_details[6])), 0, 5)
+        layout.addWidget(QLabel("Động cơ:"), 1, 4)
+        layout.addWidget(QLabel(Car.get_name_by_id("Engine", car_details[7])), 1, 5)
+        layout.addWidget(QLabel("Giá:"), 2, 4)
+        layout.addWidget(QLabel(str(car_details[8])), 2, 5)
 
-        layout.addWidget(QLabel("Giá:"), 4, 0)
-        layout.addWidget(QLabel(str(car_details[8])), 4, 1)
-        layout.addWidget(QLabel("VIN:"), 4, 2)
-        layout.addWidget(QLabel(car_details[9]), 4, 3)
-
-        layout.addWidget(QLabel("Bảo hành:"), 5, 0)
-        layout.addWidget(QLabel(str(car_details[10])), 5, 1)
-        layout.addWidget(QLabel("Trạng thái:"), 5, 2)
-        layout.addWidget(QLabel(car_details[11]), 5, 3)
+        layout.addWidget(QLabel("VIN:"), 3, 0)
+        layout.addWidget(QLabel(car_details[9]), 3, 1)
+        layout.addWidget(QLabel("Bảo hành:"), 3, 2)
+        layout.addWidget(QLabel(str(car_details[10])), 3, 3)
+        layout.addWidget(QLabel("Trạng thái:"), 3, 4)
+        layout.addWidget(QLabel(car_details[11]), 3, 5)
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         self.button_box.accepted.connect(self.accept)
         self.button_box.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
-        layout.addWidget(self.button_box, 6, 0, 1, 4)
+        layout.addWidget(self.button_box, 4, 0, 1, 6)
 
         self.setLayout(layout)

@@ -127,6 +127,11 @@ class CustomerEditDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 4, 0, 1, 2)
 
     def accept(self):
@@ -162,6 +167,8 @@ class CustomerInfoDialog(QDialog):
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         self.button_box.accepted.connect(self.accept)
+        self.button_box.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+
         layout.addWidget(self.button_box, 4, 0, 1, 2)
 
 class CustomerAddDialog(QDialog):
@@ -190,6 +197,10 @@ class CustomerAddDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 4, 0, 1, 2)
 
     def accept(self):

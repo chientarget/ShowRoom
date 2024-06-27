@@ -179,7 +179,13 @@ class HumanResourceEditDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box)
+
 
     def accept(self):
         gender = True if self.gender_edit.currentText() == "Male" else False
@@ -226,6 +232,7 @@ class HumanResourceInfoDialog(QDialog):
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         self.button_box.accepted.connect(self.accept)
+        self.button_box.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box)
 
 class HumanResourceAddDialog(QDialog):
@@ -284,6 +291,12 @@ class HumanResourceAddDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+
         layout.addWidget(self.button_box)
 
     def accept(self):

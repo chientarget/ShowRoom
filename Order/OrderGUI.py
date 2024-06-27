@@ -96,6 +96,8 @@ class OrderListWidget(QWidget):
 
             info_button = QPushButton()
             info_button.setIcon(QIcon(info_icon_path))
+            info_button.setStyleSheet("background-color: transparent;")
+
             info_button.setToolTip("View Details")
             info_button.clicked.connect(lambda _, order_id=order[0]: self.show_order_info(order_id))
             action_layout.addWidget(info_button)
@@ -103,11 +105,13 @@ class OrderListWidget(QWidget):
             edit_button = QPushButton()
             edit_button.setIcon(QIcon(edit_icon_path))
             edit_button.setToolTip("Edit Order")
+            edit_button.setStyleSheet("background-color: transparent;")
             edit_button.clicked.connect(lambda _, order_id=order[0]: self.edit_order(order_id))
             action_layout.addWidget(edit_button)
 
             delete_button = QPushButton()
             delete_button.setIcon(QIcon(delete_icon_path))
+            delete_button.setStyleSheet("background-color: transparent;")
             delete_button.setToolTip("Delete Order")
             delete_button.clicked.connect(lambda _, order_id=order[0]: self.delete_order(order_id))
             action_layout.addWidget(delete_button)
@@ -178,6 +182,8 @@ class OrderEditDialog(QDialog):
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
+
+
         layout.addWidget(button_box)
 
         self.setLayout(layout)
@@ -323,8 +329,8 @@ class OrderAddDialog(QDialog):
         button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
-        layout.addWidget(button_box)
 
+        layout.addWidget(button_box)
         self.setLayout(layout)
 
     def update_staff_list(self):

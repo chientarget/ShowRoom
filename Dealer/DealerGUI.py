@@ -161,8 +161,12 @@ class DealerForm(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
-        self.layout.addWidget(self.button_box)
 
+        ok_button = self.button_box.button(QDialogButtonBox.StandardButton.Ok)
+        ok_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        self.layout.addWidget(self.button_box)
         self.setLayout(self.layout)
 
     def get_dealer_data(self):

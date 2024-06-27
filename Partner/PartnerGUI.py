@@ -32,8 +32,8 @@ class PartnerListWidget(QWidget):
         layout.addLayout(self.button_layout)
 
         self.partner_table = QTableWidget()
-        self.partner_table.setColumnCount(9)  # Add 3 columns for the buttons
-        self.partner_table.setHorizontalHeaderLabels(["Partner ID", "Logo", "Name", "Country", "Founded Year", "Description", "", "", ""])
+        self.partner_table.setColumnCount(8)
+        self.partner_table.setHorizontalHeaderLabels(["Partner ID", "Name", "Country", "Founded Year", "Description", "", "", ""])
         self.partner_table.verticalHeader().setVisible(False)
         self.partner_table.horizontalHeader().setStretchLastSection(True)
         self.partner_table.setAlternatingRowColors(True)
@@ -54,30 +54,29 @@ class PartnerListWidget(QWidget):
             row_position = self.partner_table.rowCount()
             self.partner_table.insertRow(row_position)
             self.partner_table.setItem(row_position, 0, QTableWidgetItem(str(partner.id)))
-            self.partner_table.setItem(row_position, 1, QTableWidgetItem(partner.logo))
-            self.partner_table.setItem(row_position, 2, QTableWidgetItem(partner.name))
-            self.partner_table.setItem(row_position, 3, QTableWidgetItem(partner.country))
-            self.partner_table.setItem(row_position, 4, QTableWidgetItem(str(partner.founded_year)))
-            self.partner_table.setItem(row_position, 5, QTableWidgetItem(partner.description))
+            self.partner_table.setItem(row_position, 1, QTableWidgetItem(partner.name))
+            self.partner_table.setItem(row_position, 2, QTableWidgetItem(partner.country))
+            self.partner_table.setItem(row_position, 3, QTableWidgetItem(str(partner.founded_year)))
+            self.partner_table.setItem(row_position, 4, QTableWidgetItem(partner.description))
 
             # Add buttons for details, edit, delete with icons
             info_button = QPushButton()
             info_button.setIcon(QIcon(info_icon_path))
             info_button.setStyleSheet("background-color: transparent;")
             info_button.clicked.connect(lambda _, partner_id=partner.id: self.show_partner_info(partner_id))
-            self.partner_table.setCellWidget(row_position, 6, info_button)
+            self.partner_table.setCellWidget(row_position, 5, info_button)
 
             edit_button = QPushButton()
             edit_button.setIcon(QIcon(edit_icon_path))
             edit_button.setStyleSheet("background-color: transparent;")
             edit_button.clicked.connect(lambda _, partner_id=partner.id: self.edit_partner(partner_id))
-            self.partner_table.setCellWidget(row_position, 7, edit_button)
+            self.partner_table.setCellWidget(row_position, 6, edit_button)
 
             delete_button = QPushButton()
             delete_button.setIcon(QIcon(delete_icon_path))
             delete_button.setStyleSheet("background-color: transparent;")
             delete_button.clicked.connect(lambda _, partner_id=partner.id: self.delete_partner(partner_id))
-            self.partner_table.setCellWidget(row_position, 8, delete_button)
+            self.partner_table.setCellWidget(row_position, 7, delete_button)
 
         self.partner_table.resizeColumnsToContents()
 
@@ -112,14 +111,11 @@ class PartnerEditDialog(QDialog):
         layout = QGridLayout(self)
         partner = Partner.get_partner_by_id(self.partner_id)
 
-        self.logo_edit = QLineEdit(partner.logo)
         self.name_edit = QLineEdit(partner.name)
         self.country_edit = QLineEdit(partner.country)
         self.founded_year_edit = QLineEdit(str(partner.founded_year))
         self.description_edit = QLineEdit(partner.description)
 
-        layout.addWidget(QLabel("Logo:"), 0, 0)
-        layout.addWidget(self.logo_edit, 0, 1)
         layout.addWidget(QLabel("Tên đối tác:"), 1, 0)
         layout.addWidget(self.name_edit, 1, 1)
         layout.addWidget(QLabel("Quốc gia:"), 2, 0)
@@ -132,12 +128,15 @@ class PartnerEditDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 5, 0, 1, 2)
 
     def accept(self):
         partner = Partner(
             self.partner_id,
-            self.logo_edit.text(),
             self.name_edit.text(),
             self.country_edit.text(),
             int(self.founded_year_edit.text()),
@@ -157,8 +156,6 @@ class PartnerInfoDialog(QDialog):
         layout = QGridLayout(self)
         partner = Partner.get_partner_by_id(self.partner_id)
 
-        layout.addWidget(QLabel("Logo:"), 0, 0)
-        layout.addWidget(QLabel(partner.logo), 0, 1)
         layout.addWidget(QLabel("Tên đối tác:"), 1, 0)
         layout.addWidget(QLabel(partner.name), 1, 1)
         layout.addWidget(QLabel("Quốc gia:"), 2, 0)
@@ -181,14 +178,11 @@ class PartnerAddDialog(QDialog):
     def init_ui(self):
         layout = QGridLayout(self)
 
-        self.logo_edit = QLineEdit()
         self.name_edit = QLineEdit()
         self.country_edit = QLineEdit()
         self.founded_year_edit = QLineEdit()
         self.description_edit = QLineEdit()
 
-        layout.addWidget(QLabel("Logo:"), 0, 0)
-        layout.addWidget(self.logo_edit, 0, 1)
         layout.addWidget(QLabel("Tên đối tác:"), 1, 0)
         layout.addWidget(self.name_edit, 1, 1)
         layout.addWidget(QLabel("Quốc gia:"), 2, 0)
@@ -201,12 +195,15 @@ class PartnerAddDialog(QDialog):
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 5, 0, 1, 2)
 
     def accept(self):
         partner = Partner(
             None,
-            self.logo_edit.text(),
             self.name_edit.text(),
             self.country_edit.text(),
             int(self.founded_year_edit.text()),

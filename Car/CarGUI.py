@@ -1,3 +1,4 @@
+# CarGUI.py
 import os
 import sqlite3
 from PyQt6.QtCore import Qt
@@ -18,6 +19,7 @@ def format_price(price):
         return f"{price / 1_000_000:.0f} Triệu"
     else:
         return f"{price:,} vnđ"
+
 
 def format_warranty(warranty):
     return f"{warranty} năm"
@@ -114,11 +116,12 @@ class CarGUI(QWidget):
             SELECT car.vin, car.name, dealer.name AS dealer_name, 
                    car_type.name AS car_type_name, model.name AS model_name, car.color, 
                    car.produced_year, car.warranty_year, car.fuel_capacity, 
-                   car.price, car.status
+                   car.price, car.status, engine.name AS engine_name
             FROM Car car
             JOIN Dealer dealer ON car.dealer_id = dealer.id
             JOIN Car_Type car_type ON car.car_type_id = car_type.id
             JOIN Model model ON car.model_id = model.id
+            JOIN Engine engine ON car.engine_id = engine.id
             WHERE 1=1
         '''
         params = []
@@ -257,7 +260,7 @@ class CarEditDialog(QDialog):
         # Get foreign key data
         self.dealers = Car.get_foreign_key_data("Dealer")
         self.partners = Car.get_foreign_key_data("Partner")
-        self.drives = Car.get_foreign_key_data("Drive")
+        self.engines = Car.get_foreign_key_data("Engine")
         self.models = Car.get_foreign_key_data("Model")
         self.car_types = Car.get_foreign_key_data("Car_Type")
 
@@ -272,9 +275,9 @@ class CarEditDialog(QDialog):
         self.fuel_capacity_edit = QLineEdit(str(car.fuel_capacity))
         self.material_consumption_edit = QLineEdit(car.material_consumption)
         self.seat_num_edit = QLineEdit(str(car.seat_num))
-        self.drive_edit = QComboBox()
-        self.drive_edit.addItems(list(self.drives.values()))
-        self.drive_edit.setCurrentText(Car.get_name_by_id("Drive", car.drive_id))
+        self.engine_edit = QComboBox()
+        self.engine_edit.addItems(list(self.engines.values()))
+        self.engine_edit.setCurrentText(Car.get_name_by_id("Engine", car.engine_id))
         self.price_edit = QLineEdit(str(car.price))
         self.vin_edit = QLineEdit(car.vin)
         self.vin_edit.setEnabled(False)
@@ -293,12 +296,13 @@ class CarEditDialog(QDialog):
         self.model_edit.setCurrentText(Car.get_name_by_id("Model", car.model_id))
         self.airbags_edit = QLineEdit(car.airbags)
 
-        color = "background-color: #F2F2F2; padding: 5px 10px 5px 10px;  border-radius: 15px;"
+        color = "background-color:#1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 15px; color: white;"
         for widget in [
-            self.name_edit, self.produced_year_edit, self.color_edit,
+            self.id_edit, self.name_edit, self.produced_year_edit, self.color_edit,
             self.car_type_edit, self.fuel_capacity_edit, self.material_consumption_edit,
-            self.seat_num_edit, self.drive_edit, self.price_edit,
-            self.vin_edit, self.warranty_year_edit, self.airbags_edit
+            self.seat_num_edit, self.engine_edit, self.price_edit,
+            self.vin_edit, self.warranty_year_edit, self.airbags_edit,
+            self.status_edit, self.dealer_edit, self.partner_edit, self.model_edit
         ]:
             widget.setStyleSheet(color)
 
@@ -327,7 +331,7 @@ class CarEditDialog(QDialog):
         layout.addWidget(self.seat_num_edit, 4, 1)
 
         layout.addWidget(QLabel("Động cơ:"), 4, 2)
-        layout.addWidget(self.drive_edit, 4, 3)
+        layout.addWidget(self.engine_edit, 4, 3)
 
         layout.addWidget(QLabel("Giá:"), 5, 0)
         layout.addWidget(self.price_edit, 5, 1)
@@ -375,7 +379,7 @@ class CarEditDialog(QDialog):
             float(self.fuel_capacity_edit.text()),
             self.material_consumption_edit.text(),
             int(self.seat_num_edit.text()),
-            Car.get_id_by_name("Drive", self.drive_edit.currentText()),
+            Car.get_id_by_name("Engine", self.engine_edit.currentText()),
             float(self.price_edit.text()),
             self.vin_edit.text(),
             int(self.warranty_year_edit.text()),
@@ -386,6 +390,136 @@ class CarEditDialog(QDialog):
             self.airbags_edit.text()
         )
         car.update()
+        super().accept()
+
+
+class CarAddDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Thêm xe mới")
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QGridLayout(self)
+
+        self.dealers = Car.get_foreign_key_data("Dealer")
+        self.partners = Car.get_foreign_key_data("Partner")
+        self.engines = Car.get_foreign_key_data("Engine")
+        self.models = Car.get_foreign_key_data("Model")
+        self.car_types = Car.get_foreign_key_data("Car_Type")
+
+        self.name_edit = QLineEdit()
+        self.produced_year_edit = QLineEdit()
+        self.color_edit = QLineEdit()
+        self.car_type_edit = QComboBox()
+        self.car_type_edit.addItems(list(self.car_types.values()))
+        self.fuel_capacity_edit = QLineEdit()
+        self.material_consumption_edit = QLineEdit()
+        self.seat_num_edit = QLineEdit()
+        self.engine_edit = QComboBox()
+        self.engine_edit.addItems(list(self.engines.values()))
+        self.price_edit = QLineEdit()
+        self.vin_edit = QLineEdit()
+        self.warranty_year_edit = QLineEdit()
+        self.status_edit = QComboBox()
+        self.status_edit.addItems(["Chưa bán", "Đã bán", "Đặt cọc"])
+        self.dealer_edit = QComboBox()
+        self.dealer_edit.addItems(list(self.dealers.values()))
+        self.partner_edit = QComboBox()
+        self.partner_edit.addItems(list(self.partners.values()))
+        self.model_edit = QComboBox()
+        self.model_edit.addItems(list(self.models.values()))
+        self.airbags_edit = QLineEdit()
+
+        color = "background-color:#1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 15px; color: white;"
+        for widget in [
+            self.name_edit, self.produced_year_edit, self.color_edit,
+            self.car_type_edit, self.fuel_capacity_edit, self.material_consumption_edit,
+            self.seat_num_edit, self.engine_edit, self.price_edit,
+            self.vin_edit, self.warranty_year_edit, self.airbags_edit,
+            self.status_edit, self.dealer_edit, self.partner_edit, self.model_edit
+        ]:
+            widget.setStyleSheet(color)
+
+        layout.addWidget(QLabel("Tên xe:"), 0, 0)
+        layout.addWidget(self.name_edit, 0, 1)
+
+        layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
+        layout.addWidget(self.produced_year_edit, 0, 3)
+
+        layout.addWidget(QLabel("Màu sắc:"), 1, 0)
+        layout.addWidget(self.color_edit, 1, 1)
+
+        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
+        layout.addWidget(self.car_type_edit, 1, 3)
+
+        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
+        layout.addWidget(self.fuel_capacity_edit, 2, 1)
+
+        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
+        layout.addWidget(self.material_consumption_edit, 2, 3)
+
+        layout.addWidget(QLabel("Số ghế:"), 3, 0)
+        layout.addWidget(self.seat_num_edit, 3, 1)
+
+        layout.addWidget(QLabel("Động cơ:"), 3, 2)
+        layout.addWidget(self.engine_edit, 3, 3)
+
+        layout.addWidget(QLabel("Giá:"), 4, 0)
+        layout.addWidget(self.price_edit, 4, 1)
+
+        layout.addWidget(QLabel("VIN:"), 4, 2)
+        layout.addWidget(self.vin_edit, 4, 3)
+
+        layout.addWidget(QLabel("Bảo hành:"), 5, 0)
+        layout.addWidget(self.warranty_year_edit, 5, 1)
+
+        layout.addWidget(QLabel("Trạng thái:"), 5, 2)
+        layout.addWidget(self.status_edit, 5, 3)
+
+        layout.addWidget(QLabel("Dealer:"), 6, 0)
+        layout.addWidget(self.dealer_edit, 6, 1)
+
+        layout.addWidget(QLabel("Partner:"), 7, 0)
+        layout.addWidget(self.partner_edit, 7, 1)
+
+        layout.addWidget(QLabel("Model:"), 8, 0)
+        layout.addWidget(self.model_edit, 8, 1)
+
+        layout.addWidget(QLabel("Airbags:"), 8, 2)
+        layout.addWidget(self.airbags_edit, 8, 3)
+
+        self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
+        self.button_box.accepted.connect(self.accept)
+        self.button_box.rejected.connect(self.reject)
+
+        save_button = self.button_box.button(QDialogButtonBox.StandardButton.Save)
+        save_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        cancel_button = self.button_box.button(QDialogButtonBox.StandardButton.Cancel)
+        cancel_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
+        layout.addWidget(self.button_box, 9, 0, 1, 4)
+
+        self.setLayout(layout)
+
+    def accept(self):
+        Car.add_car(
+            self.name_edit.text(),
+            int(self.produced_year_edit.text()),
+            self.color_edit.text(),
+            Car.get_id_by_name("Car_Type", self.car_type_edit.currentText()),
+            float(self.fuel_capacity_edit.text()),
+            self.material_consumption_edit.text(),
+            int(self.seat_num_edit.text()),
+            Car.get_id_by_name("Engine", self.engine_edit.currentText()),
+            float(self.price_edit.text()),
+            self.vin_edit.text(),
+            int(self.warranty_year_edit.text()),
+            self.status_edit.currentText(),
+            Car.get_id_by_name("Dealer", self.dealer_edit.currentText()),
+            Car.get_id_by_name("Partner", self.partner_edit.currentText()),
+            Car.get_id_by_name("Model", self.model_edit.currentText()),
+            self.airbags_edit.text()
+        )
         super().accept()
 
 
@@ -424,7 +558,7 @@ class CarInfoDialog(QDialog):
         layout.addWidget(QLabel("Số ghế:"), 3, 0)
         layout.addWidget(QLabel(str(car_details[6])), 3, 1)
         layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(QLabel(Car.get_name_by_id("Drive", car_details[7])), 3, 3)
+        layout.addWidget(QLabel(Car.get_name_by_id("Engine", car_details[7])), 3, 3)
 
         layout.addWidget(QLabel("Giá:"), 4, 0)
         layout.addWidget(QLabel(str(car_details[8])), 4, 1)
@@ -438,128 +572,7 @@ class CarInfoDialog(QDialog):
 
         self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         self.button_box.accepted.connect(self.accept)
+        self.button_box.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
         layout.addWidget(self.button_box, 6, 0, 1, 4)
 
-
-class CarAddDialog(QDialog):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Thêm xe mới")
-        self.init_ui()
-
-    def init_ui(self):
-        layout = QGridLayout(self)
-
-        self.dealers = Car.get_foreign_key_data("Dealer")
-        self.partners = Car.get_foreign_key_data("Partner")
-        self.drives = Car.get_foreign_key_data("Drive")
-        self.models = Car.get_foreign_key_data("Model")
-        self.car_types = Car.get_foreign_key_data("Car_Type")
-
-        self.name_edit = QLineEdit()
-        self.produced_year_edit = QLineEdit()
-        self.color_edit = QLineEdit()
-        self.car_type_edit = QComboBox()
-        self.car_type_edit.addItems(list(self.car_types.values()))
-        self.fuel_capacity_edit = QLineEdit()
-        self.material_consumption_edit = QLineEdit()
-        self.seat_num_edit = QLineEdit()
-        self.drive_edit = QComboBox()
-        self.drive_edit.addItems(list(self.drives.values()))
-        self.price_edit = QLineEdit()
-        self.vin_edit = QLineEdit()
-        self.warranty_year_edit = QLineEdit()
-        self.status_edit = QComboBox()
-        self.status_edit.addItems(["Chưa bán", "Đã bán", "Đặt cọc"])
-        self.dealer_edit = QComboBox()
-        self.dealer_edit.addItems(list(self.dealers.values()))
-        self.partner_edit = QComboBox()
-        self.partner_edit.addItems(list(self.partners.values()))
-        self.model_edit = QComboBox()
-        self.model_edit.addItems(list(self.models.values()))
-        self.airbags_edit = QLineEdit()
-
-        color = "background-color: #F2F2F2; padding: 5px 10px 5px 10px;  border-radius: 15px;"
-        for widget in [
-            self.name_edit, self.produced_year_edit, self.color_edit,
-            self.car_type_edit, self.fuel_capacity_edit, self.material_consumption_edit,
-            self.seat_num_edit, self.drive_edit, self.price_edit,
-            self.vin_edit, self.warranty_year_edit, self.airbags_edit
-        ]:
-            widget.setStyleSheet(color)
-
-        layout.addWidget(QLabel("Tên xe:"), 0, 0)
-        layout.addWidget(self.name_edit, 0, 1)
-
-        layout.addWidget(QLabel("Năm sản xuất:"), 0, 2)
-        layout.addWidget(self.produced_year_edit, 0, 3)
-
-        layout.addWidget(QLabel("Màu sắc:"), 1, 0)
-        layout.addWidget(self.color_edit, 1, 1)
-
-        layout.addWidget(QLabel("Dòng xe:"), 1, 2)
-        layout.addWidget(self.car_type_edit, 1, 3)
-
-        layout.addWidget(QLabel("Dung tích nhiên liệu:"), 2, 0)
-        layout.addWidget(self.fuel_capacity_edit, 2, 1)
-
-        layout.addWidget(QLabel("Tiêu thụ nhiên liệu:"), 2, 2)
-        layout.addWidget(self.material_consumption_edit, 2, 3)
-
-        layout.addWidget(QLabel("Số ghế:"), 3, 0)
-        layout.addWidget(self.seat_num_edit, 3, 1)
-
-        layout.addWidget(QLabel("Động cơ:"), 3, 2)
-        layout.addWidget(self.drive_edit, 3, 3)
-
-        layout.addWidget(QLabel("Giá:"), 4, 0)
-        layout.addWidget(self.price_edit, 4, 1)
-
-        layout.addWidget(QLabel("VIN:"), 4, 2)
-        layout.addWidget(self.vin_edit, 4, 3)
-
-        layout.addWidget(QLabel("Bảo hành:"), 5, 0)
-        layout.addWidget(self.warranty_year_edit, 5, 1)
-
-        layout.addWidget(QLabel("Trạng thái:"), 5, 2)
-        layout.addWidget(self.status_edit, 5, 3)
-
-        layout.addWidget(QLabel("Dealer:"), 6, 0)
-        layout.addWidget(self.dealer_edit, 6, 1)
-
-        layout.addWidget(QLabel("Partner:"), 7, 0)
-        layout.addWidget(self.partner_edit, 7, 1)
-
-        layout.addWidget(QLabel("Model:"), 8, 0)
-        layout.addWidget(self.model_edit, 8, 1)
-
-        layout.addWidget(QLabel("Airbags:"), 8, 2)
-        layout.addWidget(self.airbags_edit, 8, 3)
-
-        self.button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Save | QDialogButtonBox.StandardButton.Cancel)
-        self.button_box.accepted.connect(self.accept)
-        self.button_box.rejected.connect(self.reject)
-        layout.addWidget(self.button_box, 9, 0, 1, 4)
-
         self.setLayout(layout)
-
-    def accept(self):
-        Car.add_car(
-            self.name_edit.text(),
-            int(self.produced_year_edit.text()),
-            self.color_edit.text(),
-            Car.get_id_by_name("Car_Type", self.car_type_edit.currentText()),
-            float(self.fuel_capacity_edit.text()),
-            self.material_consumption_edit.text(),
-            int(self.seat_num_edit.text()),
-            Car.get_id_by_name("Drive", self.drive_edit.currentText()),
-            float(self.price_edit.text()),
-            self.vin_edit.text(),
-            int(self.warranty_year_edit.text()),
-            self.status_edit.currentText(),
-            Car.get_id_by_name("Dealer", self.dealer_edit.currentText()),
-            Car.get_id_by_name("Partner", self.partner_edit.currentText()),
-            Car.get_id_by_name("Model", self.model_edit.currentText()),
-            self.airbags_edit.text()
-        )
-        super().accept()

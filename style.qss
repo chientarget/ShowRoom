@@ -146,3 +146,12 @@ QScrollBar::add-page:horizontal,
 QScrollBar::sub-page:horizontal {
   background: none;
 }
+
+QDialogButtonBox{
+ padding: 10px;
+ background-color: #2DB4AE;
+ color: white;
+ border: none;
+ text-align: center;
+ border-radius: 10px;
+}

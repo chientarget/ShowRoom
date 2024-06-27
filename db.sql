@@ -117,37 +117,30 @@ CREATE TABLE Partner
     description  TEXT
 );
 
--- Table: History
-CREATE TABLE History
-(
-    id      INTEGER PRIMARY KEY,
-    bill_id INTEGER,
-    FOREIGN KEY (bill_id) REFERENCES "Order" (id)
-);
 
-
--- Dữ liệu mẫu cho bảng Car
+-- Dữ liệu mẫu cho bảng Car (đã sửa)
 INSERT INTO Car (produced_year, color, name, car_type_id, fuel_capacity, material_consumption, seat_num, engine_id, price, vin, dealer_id, warranty_year, Partner_id, model_id, airbags, status)
-VALUES (2024, 'Đỏ', 'VinFast VF 6', 1, '90', '6.5L/100km', 5, 1, 675000000, 'VIN001', 1, 3, 1, 1, '6 túi khí', 'Chưa bán'),
-       (2024, 'Xanh', 'VinFast VF 7', 2, '90', '7.5L/100km', 5, 1, 850000000, 'VIN002', 1, 3, 1, 2, '8 túi khí', 'Đã bán'),
-       (2024, 'Đen', 'VinFast VF 8', 3, '90', '8.0L/100km', 7, 1, 1050000000, 'VIN003', 2, 3, 1, 3, '10 túi khí', 'Cho mở bán'),
-       (2024, 'Trắng', 'VinFast VF 9', 4, '90', '8.5L/100km', 7, 1, 1250000000, 'VIN004', 2, 3, 1, 4, '12 túi khí', 'Đặt cọc'),
-       (2024, 'Bạc', 'Honda City', 5, '90', '5.5L/100km', 5, 2, 529000000, 'VIN005', 3, 3, 2, 5, '6 túi khí', 'Chưa bán'),
-       (2024, 'Xám', 'Honda CR-V', 6, '90', '7.0L/100km', 7, 2, 998000000, 'VIN006', 3, 3, 2, 6, '8 túi khí', 'Chưa bán'),
-       (2024, 'Đen', 'Honda Civic', 7, '90', '6.0L/100km', 5, 2, 730000000, 'VIN007', 4, 3, 2, 7, '6 túi khí', 'Đã bán'),
-       (2024, 'Trắng', 'Rolls-Royce Ghost', 1, '90', '15.0L/100km', 5, 3, 30000000000, 'VIN008', 5, 4, 3, 8, '8 túi khí', 'Chưa bán'),
-       (2024, 'Đen', 'Rolls-Royce Phantom', 2, '90', '16.0L/100km', 5, 3, 40000000000, 'VIN009', 5, 4, 3, 9, '10 túi khí', 'Đặt cọc'),
+VALUES (2024, 'Đỏ', 'VinFast VF 6', 1, '90', '6.5L/100km', 5, 1, 675000000, 'VIN001', 1, 3, 1, 1, '6 túi khí', 'Đã bán'),
+       (2024, 'Xanh', 'VinFast VF 7', 2, '90', '7.5L/100km', 5, 1, 850000000, 'VIN002', 2, 3, 1, 2, '8 túi khí', 'Đã bán'),
+       (2024, 'Đen', 'VinFast VF 8', 3, '90', '8.0L/100km', 7, 1, 1050000000, 'VIN003', 2, 3, 1, 3, '10 túi khí', 'Đặt cọc'),
+       (2024, 'Trắng', 'VinFast VF 9', 4, '90', '8.5L/100km', 7, 1, 1250000000, 'VIN004', 2, 3, 1, 4, '12 túi khí', 'Chưa bán'),
+       (2024, 'Bạc', 'Honda City', 5, '90', '5.5L/100km', 5, 2, 529000000, 'VIN005', 3, 3, 2, 5, '6 túi khí', 'Đã bán'),
+       (2024, 'Xám', 'Honda CR-V', 6, '90', '7.0L/100km', 7, 2, 998000000, 'VIN006', 4, 3, 2, 6, '8 túi khí', 'Đã bán'),
+       (2024, 'Đen', 'Honda Civic', 7, '90', '6.0L/100km', 5, 2, 730000000, 'VIN007', 4, 3, 2, 7, '6 túi khí', 'Chưa bán'),
+       (2024, 'Trắng', 'Rolls-Royce Ghost', 1, '90', '15.0L/100km', 5, 3, 30000000000, 'VIN008', 5, 4, 3, 8, '8 túi khí', 'Đã bán'),
+       (2024, 'Đen', 'Rolls-Royce Phantom', 2, '90', '16.0L/100km', 5, 3, 40000000000, 'VIN009', 5, 4, 3, 9, '10 túi khí', 'Chưa bán'),
        (2024, 'Xanh', 'Toyota Camry', 3, '90', '6.5L/100km', 5, 2, 1105000000, 'VIN010', 6, 3, 4, 10, '7 túi khí', 'Chưa bán'),
-       (2024, 'Bạc', 'Toyota Corolla Cross', 'Crossover', '90', '5.5L/100km', 5, 2, 720000000, 'VIN011', 6, 3, 4, 11, '7 túi khí', 'Đã bán'),
-       (2024, 'Đỏ', 'Mazda CX-5', 'SUV', '90', '7.0L/100km', 5, 2, 839000000, 'VIN012', 7, 3, 5, 12, '6 túi khí', 'Chưa bán'),
-       (2024, 'Trắng', 'Mazda3', 'Sedan', '90', '6.0L/100km', 5, 2, 669000000, 'VIN013', 7, 3, 5, 13, '6 túi khí', 'Đặt cọc'),
+       (2024, 'Bạc', 'Toyota Corolla Cross', 4, '90', '5.5L/100km', 5, 2, 720000000, 'VIN011', 6, 3, 4, 11, '7 túi khí', 'Chưa bán'),
+       (2024, 'Đỏ', 'Mazda CX-5', 3, '90', '7.0L/100km', 5, 2, 839000000, 'VIN012', 7, 3, 5, 12, '6 túi khí', 'Chưa bán'),
+       (2024, 'Trắng', 'Mazda3', 1, '90', '6.0L/100km', 5, 2, 669000000, 'VIN013', 7, 3, 5, 13, '6 túi khí', 'Chưa bán'),
        (2024, 'Xám', 'Mercedes-Benz C-Class', 6, '90', '7.0L/100km', 5, 2, 1669000000, 'VIN014', 8, 3, 6, 14, '9 túi khí', 'Chưa bán'),
-       (2024, 'Đen', 'Mercedes-Benz GLC', 2, '90', '8.0L/100km', 5, 2, 1859000000, 'VIN015', 8, 3, 6, 15, '9 túi khí', 'Đặt cọc'),
-       (2024, 'Trắng', 'BMW 3 Series', 2, '90', '6.5L/100km', 5, 2, 1529000000, 'VIN016', 9, 3, 7, 16, '8 túi khí', 'Đặt cọc'),
+       (2024, 'Đen', 'Mercedes-Benz GLC', 2, '90', '8.0L/100km', 5, 2, 1859000000, 'VIN015', 8, 3, 6, 15, '9 túi khí', 'Chưa bán'),
+       (2024, 'Trắng', 'BMW 3 Series', 2, '90', '6.5L/100km', 5, 2, 1529000000, 'VIN016', 9, 3, 7, 16, '8 túi khí', 'Đã bán'),
        (2024, 'Xanh', 'BMW X3', 1, '90', '7.5L/100km', 5, 2, 1999000000, 'VIN017', 9, 3, 7, 17, '8 túi khí', 'Đặt cọc'),
-       (2024, 'Đỏ', 'Audi A4', 3, '90', '6.0L/100km', 5, 2, 1700000000, 'VIN018', 10, 3, 8, 18, '8 túi khí', 'Đã bán'),
-       (2024, 'Bạc', 'Audi Q5', 3, '90', '7.5L/100km', 5, 2, 2400000000, 'VIN019', 10, 3, 8, 19, '8 túi khí', 'Chưa bán'),
+       (2024, 'Đỏ', 'Audi A4', 3, '90', '6.0L/100km', 5, 2, 1700000000, 'VIN018', 10, 3, 8, 18, '8 túi khí', 'Chưa bán'),
+       (2024, 'Bạc', 'Audi Q5', 3, '90', '7.5L/100km', 5, 2, 2400000000, 'VIN019', 10, 3, 8, 19, '8 túi khí', 'Đặt cọc'),
        (2024, 'Đen', 'Lexus ES', 3, '90', '6.5L/100km', 5, 2, 2540000000, 'VIN020', 11, 3, 9, 20, '10 túi khí', 'Chưa bán');
+
 
 -- Dữ liệu mẫu cho bảng Car_Type
 
@@ -234,13 +227,18 @@ VALUES ('Đặng Văn F', '0956789012', 'dvf@gmail.com', 'Hà Nội', 1),
        ('Lý Thị I', '0989012345', 'lti@gmail.com', 'Hải Phòng', 0),
        ('Vũ Văn K', '0990123456', 'vvk@gmail.com', 'Cần Thơ', 1);
 
--- Dữ liệu mẫu cho bảng "Order"
 INSERT INTO "Order" (customer_id, dealer_id, total_price, creation_time, car_id, human_resource_id)
-VALUES (1, 1, 675000000, CURRENT_TIMESTAMP, 1, 1),
-       (2, 2, 850000000, CURRENT_TIMESTAMP, 2, 2),
-       (3, 3, 529000000, CURRENT_TIMESTAMP, 5, 3),
-       (4, 4, 998000000, CURRENT_TIMESTAMP, 6, 4),
-       (5, 5, 30000000000, CURRENT_TIMESTAMP, 8, 5);
+VALUES
+(1, 1, 675000000, CURRENT_TIMESTAMP, 1, 1),
+(2, 2, 850000000, CURRENT_TIMESTAMP, 2, 2),
+(3, 2, 1050000000, CURRENT_TIMESTAMP, 3, 2),
+(4, 3, 529000000, CURRENT_TIMESTAMP, 5, 3),
+(5, 4, 998000000, CURRENT_TIMESTAMP, 6, 4),
+(1, 5, 30000000000, CURRENT_TIMESTAMP, 8, 5),
+(2, 9, 1529000000, CURRENT_TIMESTAMP, 16, 1),
+(3, 9, 1999000000, CURRENT_TIMESTAMP, 17, 2),
+(4, 10, 2400000000, CURRENT_TIMESTAMP, 19, 3);
+
 
 -- Dữ liệu mẫu cho bảng Partner
 INSERT INTO Partner (name, country, founded_year, description)
@@ -250,12 +248,5 @@ VALUES ('VinFast', 'Việt Nam', 2017, 'Nhà sản xuất ô tô và xe máy đi
        ('Toyota', 'Nhật Bản', 1937, 'Hãng sản xuất ô tô lớn nhất thế giới'),
        ('Mazda', 'Nhật Bản', 1920, 'Nhà sản xuất ô tô nổi tiếng với công nghệ SkyActiv');
 
--- Dữ liệu mẫu cho bảng History
-INSERT INTO History (bill_id)
-VALUES (1),
-       (2),
-       (3),
-       (4),
-       (5);
 
 

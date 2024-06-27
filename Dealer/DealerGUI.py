@@ -41,7 +41,7 @@ class DealerGUI(QWidget):
         self.dealer_table.setStyleSheet("""
             QHeaderView::section { background-color: #09AD90; color: white; font-size: 16px; font-weight: bold; font-family: Roboto;}
             QTableWidget::item { font-size: 14px; font-family: Roboto; }
-            QWidget { border: none; }
+            QWidget { border: none; }background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius:
             QHBoxLayout { border: none; }
             QTableWidget::item:selected { background-color: #2DB4AE; }
         """)
@@ -66,7 +66,7 @@ class DealerGUI(QWidget):
             action_layout.setContentsMargins(0, 0, 0, 0)
             action_layout.setSpacing(0)
 
-            button_size = 40
+            button_size = 35
 
             view_button = QPushButton()
             view_button.setIcon(QIcon(info_icon_path))

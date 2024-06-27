@@ -29,6 +29,7 @@ def format_capacity(capacity):
     return f"{capacity}L"
 
 
+
 class CarGUI(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -47,73 +48,68 @@ class CarGUI(QWidget):
         search_vin_label = QLabel("Tìm theo VIN:")
         self.search_vin = QLineEdit()
         self.search_vin.setPlaceholderText("Tìm theo VIN")
-        self.search_vin.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_vin.setFixedHeight(35)
         search_layout.addWidget(search_vin_label, 0, 0)
         search_layout.addWidget(self.search_vin, 1, 0)
+        self.search_vin.textChanged.connect(self.load_cars)
 
         # Search by name
         search_name_label = QLabel("Tìm theo tên:")
         self.search_name = QLineEdit()
         self.search_name.setPlaceholderText("Tìm theo tên")
-        self.search_name.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_name.setFixedHeight(35)
         search_layout.addWidget(search_name_label, 0, 1)
         search_layout.addWidget(self.search_name, 1, 1)
+        self.search_name.textChanged.connect(self.load_cars)
 
         # Search by color
         search_color_label = QLabel("Tìm theo màu sắc:")
         self.search_color = QComboBox()
         colors = self.get_all_colors()
         self.search_color.addItems(["Tất cả"] + colors)
-        self.search_color.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_color.setFixedHeight(35)
         search_layout.addWidget(search_color_label, 0, 2)
         search_layout.addWidget(self.search_color, 1, 2)
-
-        # Search by year
-        search_year_label = QLabel("Tìm theo năm:")
-        self.search_year = QComboBox()
-        self.search_year.addItems(["Tất cả"] + [str(year) for year in range(2000, 2025)])
-        self.search_year.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
-        self.search_year.setFixedHeight(35)
-        search_layout.addWidget(search_year_label, 0, 3)
-        search_layout.addWidget(self.search_year, 1, 3)
+        self.search_color.currentIndexChanged.connect(self.load_cars)
 
         # Search by price range
         search_price_range_label = QLabel("Tìm theo giá:")
         self.search_price_range = QComboBox()
         self.search_price_range.addItems(["Tất cả", "Dưới 500 triệu", "500 triệu - 1 tỷ", "Trên 1 tỷ"])
-        self.search_price_range.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_price_range.setFixedHeight(35)
-        search_layout.addWidget(search_price_range_label, 0, 4)
-        search_layout.addWidget(self.search_price_range, 1, 4)
+        search_layout.addWidget(search_price_range_label, 0, 3)
+        search_layout.addWidget(self.search_price_range, 1, 3)
+        self.search_price_range.currentIndexChanged.connect(self.load_cars)
 
         # Search by car type
         search_car_type_label = QLabel("Tìm theo dòng xe:")
         self.search_car_type = QComboBox()
         car_types = Car.get_foreign_key_data("Car_Type")
         self.search_car_type.addItems(["Tất cả"] + list(car_types.values()))
-        self.search_car_type.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_car_type.setFixedHeight(35)
-        search_layout.addWidget(search_car_type_label, 0, 5)
-        search_layout.addWidget(self.search_car_type, 1, 5)
+        search_layout.addWidget(search_car_type_label, 0, 4)
+        search_layout.addWidget(self.search_car_type, 1, 4)
+        self.search_car_type.currentIndexChanged.connect(self.load_cars)
 
         # Search by dealer
         search_dealer_label = QLabel("Tìm theo đại lý:")
         self.search_dealer = QComboBox()
         dealers = Car.get_foreign_key_data("Dealer")
         self.search_dealer.addItems(["Tất cả"] + list(dealers.values()))
-        self.search_dealer.setStyleSheet("background-color: #1e1e1e ; padding: 5px 10px 5px 10px;  border-radius: 17px; color: white;")
         self.search_dealer.setFixedHeight(35)
-        search_layout.addWidget(search_dealer_label, 0, 6)
-        search_layout.addWidget(self.search_dealer, 1, 6)
+        search_layout.addWidget(search_dealer_label, 0, 5)
+        search_layout.addWidget(self.search_dealer, 1, 5)
+        self.search_dealer.currentIndexChanged.connect(self.load_cars)
 
-        # Search button
-        search_button = QPushButton("Tìm kiếm")
-        search_button.clicked.connect(self.load_cars)
-        search_button.setStyleSheet("padding:10px 30px; background-color: #1e1e1e; color: white; border: 1px solid #cccccc; text-align: center; border-radius: 19px;")
-        search_layout.addWidget(search_button, 1, 7)
+        # Search by status
+        search_status_label = QLabel("Tìm theo trạng thái:")
+        self.search_status = QComboBox()
+        statuses = self.get_all_statuses()
+        self.search_status.addItems(["Tất cả"] + statuses)
+        self.search_status.setFixedHeight(35)
+        search_layout.addWidget(search_status_label, 0, 6)
+        search_layout.addWidget(self.search_status, 1, 6)
+        self.search_status.currentIndexChanged.connect(self.load_cars)
 
         layout.addLayout(search_layout)
 
@@ -160,6 +156,14 @@ class CarGUI(QWidget):
         conn.close()
         return colors
 
+    def get_all_statuses(self):
+        conn = sqlite3.connect('showroom.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT DISTINCT status FROM Car')
+        statuses = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return statuses
+
     def load_cars(self):
         self.car_table.setRowCount(0)
         conn = sqlite3.connect('showroom.db')
@@ -191,10 +195,6 @@ class CarGUI(QWidget):
             query += " AND car.color = ?"
             params.append(self.search_color.currentText())
 
-        if self.search_year.currentText() != "Tất cả":
-            query += " AND car.produced_year = ?"
-            params.append(int(self.search_year.currentText()))
-
         if self.search_price_range.currentText() != "Tất cả":
             if self.search_price_range.currentText() == "Dưới 500 triệu":
                 query += " AND car.price < 500000000"
@@ -212,6 +212,10 @@ class CarGUI(QWidget):
             dealer_id = Car.get_id_by_name("Dealer", self.search_dealer.currentText())
             query += " AND car.dealer_id = ?"
             params.append(dealer_id)
+
+        if self.search_status.currentText() != "Tất cả":
+            query += " AND car.status = ?"
+            params.append(self.search_status.currentText())
 
         cursor.execute(query, params)
         cars = cursor.fetchall()
@@ -288,9 +292,13 @@ class CarGUI(QWidget):
             self.load_cars()
 
     def delete_car(self, vin):
-        Car.delete_by_vin(vin)
-        QMessageBox.information(self, "Deleted", f"Car with VIN '{vin}' has been deleted.")
-        self.load_cars()
+        reply = QMessageBox.question(self, 'Xác nhận xóa',
+                                     f"Bạn có chắc chắn muốn xóa xe có VIN '{vin}' không?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                     QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            Car.delete_by_vin(vin)
+            self.load_cars()
 
     def show_car_info(self, vin):
         dialog = CarInfoDialog(vin, self)

@@ -80,6 +80,11 @@ class Order:
     def delete(order_id):
         conn = sqlite3.connect('showroom.db')
         cursor = conn.cursor()
+
+        cursor.execute('SELECT car_id FROM "Order" WHERE id = ?', (order_id,))
+        car_id = cursor.fetchone()[0]
         cursor.execute('DELETE FROM "Order" WHERE id = ?', (order_id,))
+        cursor.execute('UPDATE Car SET status = "Chưa bán" WHERE id = ?', (car_id,))
+
         conn.commit()
         conn.close()

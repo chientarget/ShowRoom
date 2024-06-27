@@ -3,6 +3,7 @@
   font-size: 14px;
   color: white;
   background-color: #1e1e1e;
+
 }
 
 QPushButton {
@@ -53,12 +54,12 @@ QComboBox::down-arrow {
 QComboBox::drop-down {
   border: none;
 }
-QLineEdit {
-  background-color: #ffffff;
+QLineEdit,QComboBox {
+  background-color: #1e1e1e ;
   border: 1px solid #cccccc;
-  border-radius: 10px;
-  padding-left: 10px;
-  color: #000000;
+  border-radius: 15px;
+  padding: 5px 10px 5px 10px;
+  color: white;
   font-size: 16px;
 }
 

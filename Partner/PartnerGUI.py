@@ -59,21 +59,24 @@ class PartnerListWidget(QWidget):
             self.partner_table.setItem(row_position, 3, QTableWidgetItem(str(partner.founded_year)))
             self.partner_table.setItem(row_position, 4, QTableWidgetItem(partner.description))
 
-            # Add buttons for details, edit, delete with icons
+
             info_button = QPushButton()
             info_button.setIcon(QIcon(info_icon_path))
             info_button.setStyleSheet("background-color: transparent;")
+            info_button.setMinimumWidth(50)
             info_button.clicked.connect(lambda _, partner_id=partner.id: self.show_partner_info(partner_id))
             self.partner_table.setCellWidget(row_position, 5, info_button)
 
             edit_button = QPushButton()
             edit_button.setIcon(QIcon(edit_icon_path))
             edit_button.setStyleSheet("background-color: transparent;")
+            edit_button.setMinimumWidth(50)
             edit_button.clicked.connect(lambda _, partner_id=partner.id: self.edit_partner(partner_id))
             self.partner_table.setCellWidget(row_position, 6, edit_button)
 
             delete_button = QPushButton()
             delete_button.setIcon(QIcon(delete_icon_path))
+            delete_button.setMinimumWidth(50)
             delete_button.setStyleSheet("background-color: transparent;")
             delete_button.clicked.connect(lambda _, partner_id=partner.id: self.delete_partner(partner_id))
             self.partner_table.setCellWidget(row_position, 7, delete_button)
@@ -86,9 +89,13 @@ class PartnerListWidget(QWidget):
             self.load_partners()
 
     def delete_partner(self, partner_id):
-        Partner.delete(partner_id)
-        QMessageBox.information(self, "Deleted", f"Partner ID '{partner_id}' has been deleted.")
-        self.load_partners()
+        reply = QMessageBox.question(self, 'Xác nhận xóa',
+                                     f"Bạn có chắc chắn muốn xóa đối tác có ID '{partner_id}' không?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                     QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            Partner.delete(partner_id)
+            self.load_partners()
 
     def show_partner_info(self, partner_id):
         dialog = PartnerInfoDialog(partner_id, self)

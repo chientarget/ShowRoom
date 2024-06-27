@@ -105,9 +105,13 @@ class HumanResourcesListWidget(QWidget):
             self.load_human_resources()
 
     def delete_human_resource(self, human_resource_id):
-        HumanResource.delete(human_resource_id)
-        QMessageBox.information(self, "Deleted", f"Human resource ID '{human_resource_id}' has been deleted.")
-        self.load_human_resources()
+        reply = QMessageBox.question(self, 'Xác nhận xóa',
+                                     f"Bạn có chắc chắn muốn xóa nhân viên có ID '{human_resource_id}' không?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                     QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            HumanResource.delete(human_resource_id)
+            self.load_human_resources()
 
     def show_human_resource_info(self, human_resource_id):
         dialog = HumanResourceInfoDialog(human_resource_id, self)

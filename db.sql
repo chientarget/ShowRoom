@@ -70,7 +70,9 @@ CREATE TABLE Human_resources
     address  TEXT,
     gender   BOOLEAN,
     role_id  INTEGER,
-    FOREIGN KEY (role_id) REFERENCES Role (id)
+    dealer_id INTEGER,
+    FOREIGN KEY (role_id) REFERENCES Role (id),
+    FOREIGN KEY (dealer_id) REFERENCES Dealer (id)
 );
 
 -- Table: Role
@@ -204,19 +206,18 @@ VALUES ('VinFast Hà Nội', 'Số 1 Đại Cồ Việt, Hai Bà Trưng, Hà N�
 
 
 -- Dữ liệu mẫu cho bảng Human_resources
-INSERT INTO Human_resources (username, password, name, phone, email, address, gender, role_id)
-VALUES ('huychien', '123', 'Nguyễn Huy Chiến', '0901234567', 'huychien@vinfast.vn', 'Hà Nội', 1, 1),
-       ('tungduong', '123', 'Trần Tùng Dương', '0912345678', 'tungduong@vinfast.vn', 'TP.HCM', 0, 2),
-       ('thivan', '123', 'Đỗ Thị Vân', '0923456789', 'thivan@hondaoto.vn', 'Hà Nội', 1, 3),
-       ('c4', '123', 'Phạm Thị D', '0934567890', 'ptd@toyotavn.com.vn', 'TP.HCM', 0, 2),
-       ('c5', '123', 'Hoàng Văn E', '0945678901', 'hve@mazdavn.vn', 'Hà Nội', 1, 3);
+INSERT INTO Human_resources (username, password, name, phone, email, address, gender, role_id, dealer_id)
+VALUES ('huychien', '123', 'Nguyễn Huy Chiến', '0901234567', 'huychien@vinfast.vn', 'Hà Nội', 1, 1,1),
+       ('tungduong', '123', 'Trần Tùng Dương', '0912345678', 'tungduong@vinfast.vn', 'TP.HCM', 0, 2,2),
+       ('thivan', '123', 'Đỗ Thị Vân', '0923456789', 'thivan@hondaoto.vn', 'Hà Nội', 1, 3,3),
+       ('c4', '123', 'Phạm Thị D', '0934567890', 'ptd@toyotavn.com.vn', 'TP.HCM', 0, 2,3),
+       ('c5', '123', 'Hoàng Văn E', '0945678901', 'hve@mazdavn.vn', 'Hà Nội', 1, 3,4);
 
 -- Dữ liệu mẫu cho bảng Role
 INSERT INTO Role (name)
 VALUES ('Quản lý'),
        ('Nhân viên bán hàng'),
        ('Kỹ thuật viên'),
-       ('Nhân viên hành chính'),
        ('Nhân viên chăm sóc khách hàng');
 
 -- Dữ liệu mẫu cho bảng Customer

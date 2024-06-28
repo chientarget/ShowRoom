@@ -9,9 +9,11 @@ info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
 edit_icon_path = os.path.join(base_dir, "img", "img_crud", "edit.svg")
 delete_icon_path = os.path.join(base_dir, "img", "img_crud", "delete.svg")
 
+
 class CustomerGUI(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.sort_order = Qt.SortOrder.DescendingOrder
         self.init_ui()
 
     def init_ui(self):
@@ -21,18 +23,55 @@ class CustomerGUI(QWidget):
         header.setStyleSheet("color: #09AD90; font-family: Roboto; font-size: 30px; margin-bottom: 20px;")
         layout.addWidget(header)
 
-        self.button_layout = QHBoxLayout()
-        self.add_customer_button = QPushButton("+   Thêm khách hàng")
+        search_layout = QHBoxLayout()
+
+        self.search_name_edit = QLineEdit()
+        self.search_name_edit.setPlaceholderText("Tìm theo tên")
+        self.search_name_edit.setFixedWidth(180)
+        self.search_name_edit.textChanged.connect(self.load_customers)
+        search_layout.addWidget(self.search_name_edit)
+
+        self.search_address_edit = QLineEdit()
+        self.search_address_edit.setPlaceholderText("Tìm theo địa chỉ")
+        self.search_address_edit.setFixedWidth(180)
+        self.search_address_edit.textChanged.connect(self.load_customers)
+        search_layout.addWidget(self.search_address_edit)
+
+        self.search_phone_edit = QLineEdit()
+        self.search_phone_edit.setPlaceholderText("Tìm theo điện thoại")
+        self.search_phone_edit.setFixedWidth(180)
+        self.search_phone_edit.textChanged.connect(self.load_customers)
+        search_layout.addWidget(self.search_phone_edit)
+
+        self.search_email_edit = QLineEdit()
+        self.search_email_edit.setPlaceholderText("Tìm theo email")
+        self.search_email_edit.setFixedWidth(180)
+        self.search_email_edit.textChanged.connect(self.load_customers)
+        search_layout.addWidget(self.search_email_edit)
+
+        button_layout = QHBoxLayout()
+        button_layout.addStretch(1)
+
+        self.sort_button = QPushButton("Sắp xếp")
+        self.sort_button.setFont(QFont('Roboto', 12, QFont.Weight.Bold))
+        self.sort_button.setFixedHeight(50)
+        self.sort_button.clicked.connect(self.sort_customers)
+        self.sort_button.setStyleSheet("padding: 10px 20px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 18px;")
+        button_layout.addWidget(self.sort_button , alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.add_customer_button = QPushButton("+ Thêm khách hàng")
         self.add_customer_button.setFont(QFont('Roboto', 12, QFont.Weight.Bold))
-        self.add_customer_button.setFixedSize(150, 40)
+        self.add_customer_button.setFixedHeight(50)
         self.add_customer_button.clicked.connect(self.add_customer)
-        self.add_customer_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
-        self.button_layout.addWidget(self.add_customer_button, alignment=Qt.AlignmentFlag.AlignRight)
-        layout.addLayout(self.button_layout)
+        self.add_customer_button.setStyleSheet("padding: 10px 20px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 18px;")
+        button_layout.addWidget(self.add_customer_button , alignment=Qt.AlignmentFlag.AlignRight)
+
+        search_layout.addLayout(button_layout)
+        layout.addLayout(search_layout)
 
         self.customer_table = QTableWidget()
-        self.customer_table.setColumnCount(7)  # Add 3 columns for the buttons
-        self.customer_table.setHorizontalHeaderLabels(["Customer ID", "Name", "Address", "Phone", "Email", "", "", ""])
+        self.customer_table.setColumnCount(9)  # Update to include new columns
+        self.customer_table.setHorizontalHeaderLabels(["ID khách hàng", "Tên", "Địa chỉ", "Điện thoại", "Email", "Số lượng xe đã mua", "Tổng giá trị mua hàng", "Chỉnh sửa", "Xóa"])
         self.customer_table.verticalHeader().setVisible(False)
         self.customer_table.horizontalHeader().setStretchLastSection(True)
         self.customer_table.setAlternatingRowColors(True)
@@ -47,40 +86,59 @@ class CustomerGUI(QWidget):
 
     def load_customers(self):
         self.customer_table.setRowCount(0)
-        customers = Customer.get_all_customers()
+        customers = Customer.get_all_customers_with_total_purchase()
+
+        search_name = self.search_name_edit.text().lower()
+        search_address = self.search_address_edit.text().lower()
+        search_phone = self.search_phone_edit.text().lower()
+        search_email = self.search_email_edit.text().lower()
 
         for customer in customers:
+            if (search_name and search_name not in customer[1].lower()) or \
+                    (search_address and search_address not in customer[2].lower()) or \
+                    (search_phone and search_phone not in customer[3].lower()) or \
+                    (search_email and search_email not in customer[4].lower()):
+                continue
+
             row_position = self.customer_table.rowCount()
             self.customer_table.insertRow(row_position)
-            self.customer_table.setItem(row_position, 0, QTableWidgetItem(str(customer.id)))
-            self.customer_table.setItem(row_position, 1, QTableWidgetItem(customer.name))
-            self.customer_table.setItem(row_position, 2, QTableWidgetItem(customer.address))
-            self.customer_table.setItem(row_position, 3, QTableWidgetItem(customer.phone))
-            self.customer_table.setItem(row_position, 4, QTableWidgetItem(customer.email))
+            id_item = QTableWidgetItem(str(customer[0]))
+            id_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.customer_table.setItem(row_position, 0, id_item)
+
+            self.customer_table.setItem(row_position, 1, QTableWidgetItem(customer[1]))
+            self.customer_table.setItem(row_position, 2, QTableWidgetItem(customer[2]))
+            self.customer_table.setItem(row_position, 3, QTableWidgetItem(customer[3]))
+            self.customer_table.setItem(row_position, 4, QTableWidgetItem(customer[4]))
+
+            purchased_item = QTableWidgetItem(str(Customer.get_purchased_car_count(customer[0])))
+            purchased_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            self.customer_table.setItem(row_position, 5, purchased_item)
+
+            total_purchase_item = QTableWidgetItem(f"{customer[5]:,}")
+            total_purchase_item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            self.customer_table.setItem(row_position, 6, total_purchase_item)
 
             # Add buttons for details, edit, delete with icons
-            info_button = QPushButton()
-            info_button.setIcon(QIcon(info_icon_path))
-            info_button.setStyleSheet("background-color: transparent;")
-            info_button.setMinimumWidth(50)
-            info_button.clicked.connect(lambda _, customer_id=customer.id: self.show_customer_info(customer_id))
-            self.customer_table.setCellWidget(row_position, 5, info_button)
-
             edit_button = QPushButton()
             edit_button.setIcon(QIcon(edit_icon_path))
             edit_button.setMinimumWidth(50)
             edit_button.setStyleSheet("background-color: transparent;")
-            edit_button.clicked.connect(lambda _, customer_id=customer.id: self.edit_customer(customer_id))
-            self.customer_table.setCellWidget(row_position, 6, edit_button)
+            edit_button.clicked.connect(lambda _, customer_id=customer[0]: self.edit_customer(customer_id))
+            self.customer_table.setCellWidget(row_position, 7, edit_button)
 
             delete_button = QPushButton()
             delete_button.setIcon(QIcon(delete_icon_path))
             delete_button.setMinimumWidth(50)
             delete_button.setStyleSheet("background-color: transparent;")
-            delete_button.clicked.connect(lambda _, customer_id=customer.id: self.delete_customer(customer_id))
-            self.customer_table.setCellWidget(row_position, 7, delete_button)
+            delete_button.clicked.connect(lambda _, customer_id=customer[0]: self.delete_customer(customer_id))
+            self.customer_table.setCellWidget(row_position, 8, delete_button)
 
         self.customer_table.resizeColumnsToContents()
+
+    def sort_customers(self):
+        self.sort_order = Qt.SortOrder.AscendingOrder if self.sort_order == Qt.SortOrder.DescendingOrder else Qt.SortOrder.DescendingOrder
+        self.customer_table.sortItems(6, self.sort_order)
 
     def add_customer(self):
         dialog = CustomerAddDialog(self)

@@ -77,3 +77,25 @@ class HumanResource:
         role_name = cursor.fetchone()[0]
         conn.close()
         return role_name
+
+    @staticmethod
+    def get_sold_cars_count(human_resource_id):
+        conn = sqlite3.connect('showroom.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+               SELECT COUNT(*) FROM Car WHERE dealer_id = ?
+           ''', (human_resource_id,))
+        count = cursor.fetchone()[0]
+        conn.close()
+        return count
+
+    @staticmethod
+    def get_total_revenue(human_resource_id):
+        conn = sqlite3.connect('showroom.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+                SELECT SUM(price) FROM Car WHERE dealer_id = ?
+            ''', (human_resource_id,))
+        revenue = cursor.fetchone()[0] or 0
+        conn.close()
+        return revenue

@@ -209,7 +209,6 @@ class LoginWindow(QMainWindow):
             return
 
         user = get_user(username)
-
         if user and user[2] == password:
             print("Login successful")
             self.hide()

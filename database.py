@@ -99,4 +99,27 @@ def get_top_human_resource_monthly():
     return top_human_resource
 
 
+PERMISSIONS = {
+    'Quản lý': ['all'],
+    'Nhân viên bán hàng': ['add_order', 'view_order', 'view_car'],
+    'Kỹ thuật viên': ['add_car', 'view_dealer'],
+    'Nhân viên chăm sóc khách hàng': ['view_customer', 'update_customer']
+}
 
+def has_permission(role, action):
+    if 'all' in PERMISSIONS.get(role, []):
+        return True
+    return action in PERMISSIONS.get(role, [])
+
+def get_user_role(user_id):
+    conn = sqlite3.connect('showroom.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT Role.name
+        FROM Human_resources
+        JOIN Role ON Human_resources.role_id = Role.id
+        WHERE Human_resources.id = ?
+    ''', (user_id,))
+    role = cursor.fetchone()
+    conn.close()
+    return role[0] if role else None

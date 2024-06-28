@@ -2,7 +2,7 @@
 import sys
 
 from PyQt6.QtCore import QSize
-from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QApplication, QMainWindow, QHBoxLayout, QWidget, QLabel, QPushButton, QVBoxLayout, QMessageBox
 from PyQt6.QtGui import QFont, QIcon
 from Car.CarGUI import CarGUI
 from OverviewWidget import OverviewWidget
@@ -16,6 +16,7 @@ from Login import LoginWindow
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Showroom Management')
@@ -76,7 +77,7 @@ class MainWindow(QMainWindow):
             ("Danh sách đơn hàng", self.show_order_list, "img/img_sidebar_buttons/order_list.svg"),
             ("Hãng xe đối tác", self.show_partner_list, "img/img_sidebar_buttons/partner_list.svg"),
             ("Danh sách khách hàng", self.show_customer_list, "img/img_sidebar_buttons/show_customer_list.svg"),
-            ("Danh sách nhân viên", self.human_resources, "img/img_sidebar_buttons/human_resource_list.svg"),
+            ("Danh sách nhân sự", self.human_resources, "img/img_sidebar_buttons/human_resource_list.svg"),
             ("Danh sách đại lý", self.show_dealer_list, "img/img_sidebar_buttons/dealer_list.svg")  # Đổi tên hàm và icon
         ]
         self.sidebar_layout.addStretch()
@@ -114,8 +115,11 @@ class MainWindow(QMainWindow):
         button.setStyleSheet("background-color: transparent;font-size:18px; spacing: 10px; border-left: 3px solid #FBCE49; border-radius: none;")
         handler()
 
+    user_ids = 0
+
     def show_main_window(self, name, user_id, role_id):
         role = get_role_by_id(role_id)
+        self.user_ids = user_id
         self.user_label.setText(f"{name}\nChức danh: {role}\nID: {user_id}")
         self.user_role = role_id
         self.show()
@@ -132,27 +136,43 @@ class MainWindow(QMainWindow):
 
     def show_car_list(self):
         self.clear_main_layout()
-        self.main_layout.addWidget(CarGUI())
+        self.main_layout.addWidget(CarGUI(self.user_ids))
 
     def show_order_list(self):
-        self.clear_main_layout()
-        self.main_layout.addWidget(OrderListWidget())
+        if self.user_role not in [1, 2, 4]:
+            QMessageBox.critical(self, "Error", "Bạn không có quyền xem thông tin khách hàng.")
+            return
+        else:
+            self.clear_main_layout()
+            self.main_layout.addWidget(OrderListWidget())
 
     def show_partner_list(self):
         self.clear_main_layout()
         self.main_layout.addWidget(PartnerListWidget())
 
     def show_customer_list(self):
-        self.clear_main_layout()
-        self.main_layout.addWidget(CustomerGUI())
+        if self.user_role not in [1,2, 4]:
+            QMessageBox.critical(self, "Error", "Bạn không có quyền xem thông tin khách hàng.")
+            return
+        else:
+            self.clear_main_layout()
+            self.main_layout.addWidget(CustomerGUI())
 
     def human_resources(self):
-        self.clear_main_layout()
-        self.main_layout.addWidget(HumanResourcesListWidget())
+        if self.user_role not in [1, 4]:
+            QMessageBox.critical(self, "Error", "Bạn không có quyền xem thông tin khách hàng.")
+            return
+        else:
+            self.clear_main_layout()
+            self.main_layout.addWidget(HumanResourcesListWidget())
 
     def show_dealer_list(self):
-        self.clear_main_layout()
-        self.main_layout.addWidget(DealerGUI())
+        if self.user_role not in [1]:
+            QMessageBox.critical(self, "Error", "Bạn không có quyền xem thông tin đại lý.")
+            return
+        else:
+            self.clear_main_layout()
+            self.main_layout.addWidget(DealerGUI())
 
     def logout(self):
         print("Logout clicked")

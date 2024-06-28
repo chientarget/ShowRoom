@@ -16,33 +16,56 @@ class HumanResourcesListWidget(QWidget):
 
     def init_ui(self):
         self.main_layout = QVBoxLayout(self)
-        header = QLabel("Danh sách nhân viên")
+        header = QLabel("Danh sách Nhân sự")
         header.setFont(QFont('Roboto', 30, QFont.Weight.ExtraBold))
         header.setStyleSheet("color: #09AD90; font-family: Roboto; font-size: 30px; margin-bottom: 20px;")
         self.main_layout.addWidget(header)
 
+        search_layout = QHBoxLayout()
+
+        self.search_name_edit = QLineEdit()
+        self.search_name_edit.setPlaceholderText("Tìm theo tên")
+        self.search_name_edit.setFixedWidth(200)
+        self.search_name_edit.textChanged.connect(self.load_human_resources)
+        search_layout.addWidget(self.search_name_edit)
+
+        self.search_address_edit = QLineEdit()
+        self.search_address_edit.setPlaceholderText("Tìm theo địa chỉ")
+        self.search_address_edit.setFixedWidth(200)
+        self.search_address_edit.textChanged.connect(self.load_human_resources)
+        search_layout.addWidget(self.search_address_edit)
+
+        self.search_role_combo = QComboBox()
+        self.search_role_combo.setFixedWidth(250)
+        self.search_role_combo.addItem("Tất cả")
+        for role in HumanResource.get_roles():
+            self.search_role_combo.addItem(role[1], role[0])
+        self.search_role_combo.currentIndexChanged.connect(self.load_human_resources)
+        search_layout.addWidget(self.search_role_combo)
+
         self.button_layout = QHBoxLayout()
-        self.add_human_resource_button = QPushButton("+   Thêm nhân viên")
+        self.add_human_resource_button = QPushButton("+   Thêm Nhân sự")
         self.add_human_resource_button.setFont(QFont('Roboto', 12, QFont.Weight.Bold))
-        self.add_human_resource_button.setFixedSize(150, 40)
+        self.add_human_resource_button.setFixedSize(150, 42)
         self.add_human_resource_button.clicked.connect(self.add_human_resource)
-        self.add_human_resource_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 10px;")
-        self.button_layout.addWidget(self.add_human_resource_button, alignment=Qt.AlignmentFlag.AlignRight)
-        self.main_layout.addLayout(self.button_layout)
+        self.add_human_resource_button.setStyleSheet("padding: 10px; background-color: #2DB4AE; color: white; border: none; text-align: center; border-radius: 16px;")
+        search_layout.addWidget(self.add_human_resource_button, alignment=Qt.AlignmentFlag.AlignRight)
+
+        self.main_layout.addLayout(search_layout)
 
         self.human_resource_table = QTableWidget()
-        self.human_resource_table.setColumnCount(9)
-        self.human_resource_table.setHorizontalHeaderLabels(["ID", "Username", "Name", "Phone", "Email", "Address", "Gender", "Role", "Actions"])
+        self.human_resource_table.setColumnCount(11)
+        self.human_resource_table.setHorizontalHeaderLabels(["ID", "Tên đăng nhập", "Tên", "Điện thoại", "Email", "Địa chỉ", "Giới tính", "Vai trò", "Số lượng xe đã bán", "Doanh thu", "Hành động"])
         self.human_resource_table.verticalHeader().setVisible(False)
         self.human_resource_table.horizontalHeader().setStretchLastSection(True)
         self.human_resource_table.setAlternatingRowColors(True)
         self.human_resource_table.setStyleSheet("""
-            QHeaderView::section { background-color: #09AD90; color: white; font-size: 16px;  font-weight: bold; font-family: Roboto;}
-            QTableWidget::item { font-size: 14px; font-family: Roboto; }
-            QWidget { border: none; }
-            QHBoxLayout { border: none; }
-            QTableWidget::item:selected { background-color: #2DB4AE; }
-        """)
+               QHeaderView::section { background-color: #09AD90; color: white; font-size: 16px;  font-weight: bold; font-family: Roboto;}
+               QTableWidget::item { font-size: 14px; font-family: Roboto; }
+               QWidget { border: none; }
+               QHBoxLayout { border: none; }
+               QTableWidget::item:selected { background-color: #2DB4AE; }
+           """)
         self.main_layout.addWidget(self.human_resource_table)
 
         self.setLayout(self.main_layout)
@@ -52,7 +75,14 @@ class HumanResourcesListWidget(QWidget):
         self.human_resource_table.setRowCount(0)
         human_resources = HumanResource.get_all_human_resource()
 
+        search_name = self.search_name_edit.text().lower()
+        search_address = self.search_address_edit.text().lower()
+        search_role = self.search_role_combo.currentData()
+
         for hr in human_resources:
+            if (search_name and search_name not in hr[3].lower()) or (search_address and search_address not in hr[6].lower()) or (search_role and hr[8] != search_role):
+                continue
+
             row_position = self.human_resource_table.rowCount()
             self.human_resource_table.insertRow(row_position)
             self.human_resource_table.setItem(row_position, 0, QTableWidgetItem(str(hr[0])))
@@ -61,8 +91,13 @@ class HumanResourcesListWidget(QWidget):
             self.human_resource_table.setItem(row_position, 3, QTableWidgetItem(hr[4]))
             self.human_resource_table.setItem(row_position, 4, QTableWidgetItem(hr[5]))
             self.human_resource_table.setItem(row_position, 5, QTableWidgetItem(hr[6]))
-            self.human_resource_table.setItem(row_position, 6, QTableWidgetItem("Male" if hr[7] else "Female"))
+            self.human_resource_table.setItem(row_position, 6, QTableWidgetItem("Nam" if hr[7] else "Nữ"))
             self.human_resource_table.setItem(row_position, 7, QTableWidgetItem(HumanResource.get_role_name(hr[8])))
+            self.human_resource_table.setItem(row_position, 8, QTableWidgetItem(str(HumanResource.get_sold_cars_count(hr[0]))))
+            self.human_resource_table.setItem(row_position, 9, QTableWidgetItem(f"{HumanResource.get_total_revenue(hr[0]):,}"))
+
+            for col in [0, 6, 8, 9]:
+                self.human_resource_table.item(row_position, col).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             # Add action buttons
             action_layout = QHBoxLayout()
@@ -95,9 +130,9 @@ class HumanResourcesListWidget(QWidget):
 
             action_widget = QWidget()
             action_widget.setLayout(action_layout)
-            self.human_resource_table.setCellWidget(row_position, 8, action_widget)
+            self.human_resource_table.setCellWidget(row_position, 10, action_widget)
 
-        self.human_resource_table.setColumnWidth(8, 120)  # Adjust width for action buttons
+        self.human_resource_table.setColumnWidth(10, 150)
 
     def add_human_resource(self):
         dialog = HumanResourceAddDialog(self)

@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QIcon, QColor
 from PyQt6.QtWidgets import *
 from Car.Car import Car
+from database import has_permission, get_user_role
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 info_icon_path = os.path.join(base_dir, "img", "img_crud", "info.svg")
@@ -29,11 +30,11 @@ def format_capacity(capacity):
     return f"{capacity}L"
 
 
-
 class CarGUI(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, user_id, parent=None):
         super().__init__(parent)
         self.init_ui()
+        self.user_role = get_user_role(user_id)
 
     def init_ui(self):
         layout = QVBoxLayout(self)
@@ -287,9 +288,13 @@ class CarGUI(QWidget):
         self.summary_label.setText(f"Đã bán: {sold_count}   Chưa bán: {not_sold_count}   Đặt cọc: {reserved_count}")
 
     def add_car(self):
-        dialog = CarAddDialog(self)
-        if dialog.exec():
-            self.load_cars()
+        if not has_permission(self.user_role, 'add_car'):
+            QMessageBox.critical(self, "Error", "Bạn không có quyền thêm xe.")
+            return
+        else:
+            dialog = CarAddDialog(self)
+            if dialog.exec():
+                self.load_cars()
 
     def delete_car(self, vin):
         reply = QMessageBox.question(self, 'Xác nhận xóa',

@@ -1,5 +1,7 @@
 # PartnerGUI.py
 import os
+import sqlite3
+
 from PyQt6.QtWidgets import*
 from PyQt6.QtGui import QFont, QIcon
 from PyQt6.QtCore import Qt
@@ -23,6 +25,23 @@ class PartnerListWidget(QWidget):
         layout.addWidget(header)
 
         self.button_layout = QHBoxLayout()
+
+        # ComboBox for Country Filter
+        self.country_filter = QComboBox()
+        self.country_filter.addItem("Tất cả")
+        self.country_filter.addItems(self.get_all_countries())
+        self.country_filter.currentTextChanged.connect(self.load_partners)
+        self.button_layout.addWidget(QLabel("Lọc theo quốc gia:"))
+        self.button_layout.addWidget(self.country_filter)
+
+        # ComboBox for Sorting
+        self.sort_order = QComboBox()
+        self.sort_order.addItem("Năm thành lập tăng dần")
+        self.sort_order.addItem("Năm thành lập giảm dần")
+        self.sort_order.currentTextChanged.connect(self.load_partners)
+        self.button_layout.addWidget(QLabel("Sắp xếp theo:"))
+        self.button_layout.addWidget(self.sort_order)
+
         self.add_partner_button = QPushButton("+   Thêm đối tác")
         self.add_partner_button.setFont(QFont('Roboto', 12, QFont.Weight.Bold))
         self.add_partner_button.setFixedSize(150, 40)
@@ -46,9 +65,24 @@ class PartnerListWidget(QWidget):
         self.setLayout(layout)
         self.load_partners()
 
+    def get_all_countries(self):
+        conn = sqlite3.connect('showroom.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT DISTINCT country FROM Partner')
+        countries = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return countries
+
     def load_partners(self):
         self.partner_table.setRowCount(0)
-        partners = Partner.get_all_partners()
+        country = self.country_filter.currentText()
+        sort_order = self.sort_order.currentText()
+
+        if country == "Tất cả":
+            partners = Partner.get_all_partners_sorted_by_year(ascending=(sort_order == "Năm thành lập tăng dần"))
+        else:
+            partners = Partner.get_partners_by_country(country)
+            partners = sorted(partners, key=lambda x: x.founded_year, reverse=(sort_order == "Năm thành lập giảm dần"))
 
         for partner in partners:
             row_position = self.partner_table.rowCount()
@@ -59,6 +93,8 @@ class PartnerListWidget(QWidget):
             self.partner_table.setItem(row_position, 3, QTableWidgetItem(str(partner.founded_year)))
             self.partner_table.setItem(row_position, 4, QTableWidgetItem(partner.description))
 
+            # Center align ID column
+            self.partner_table.item(row_position, 0).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             info_button = QPushButton()
             info_button.setIcon(QIcon(info_icon_path))

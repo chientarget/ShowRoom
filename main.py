@@ -19,7 +19,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Showroom Management')
+        self.setWindowTitle('Phần mềm quản lý đại lý xe hơi')
         self.resize(1600, 800)
 
         # Sidebar

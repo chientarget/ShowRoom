@@ -1,8 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from PyQt6.QtGui import QFont
 from PyQt6.QtCore import Qt
-from database import (get_monthly_revenue, get_cars_sold, get_cars_in_stock,
-                      get_top_dealers, get_top_human_resource_weekly, get_top_human_resource_monthly)
+from database import (get_monthly_revenue, get_cars_sold, get_cars_in_stock, get_top_dealers, get_top_human_resource_weekly, get_top_human_resource_monthly)
 
 class OverviewWidget(QWidget):
     def __init__(self):

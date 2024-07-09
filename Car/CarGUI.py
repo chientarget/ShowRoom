@@ -287,7 +287,7 @@ class CarGUI(QWidget):
         # Update the summary labels
         self.summary_label.setText(f"Đã bán: {sold_count}   Chưa bán: {not_sold_count}   Đặt cọc: {reserved_count}")
 
-    def add_car(self):
+    def add_car(self): 
         if not has_permission(self.user_role, 'add_car'):
             QMessageBox.critical(self, "Error", "Bạn không có quyền thêm xe.")
             return

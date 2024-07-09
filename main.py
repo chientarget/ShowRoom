@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(PartnerListWidget())
 
     def show_customer_list(self):
-        if self.user_role not in [1,2, 4]:
+        if self.user_role not in [1, 2, 4]:
             QMessageBox.critical(self, "Error", "Bạn không có quyền xem thông tin khách hàng.")
             return
         else:

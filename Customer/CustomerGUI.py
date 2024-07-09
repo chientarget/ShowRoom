@@ -115,7 +115,7 @@ class CustomerGUI(QWidget):
             purchased_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.customer_table.setItem(row_position, 5, purchased_item)
 
-            total_purchase_item = QTableWidgetItem(f"{customer[5]:,}")
+            total_purchase_item = QTableWidgetItem(f"{customer[5] or 0:,}")
             total_purchase_item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             self.customer_table.setItem(row_position, 6, total_purchase_item)
 
